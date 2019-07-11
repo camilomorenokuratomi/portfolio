@@ -14,10 +14,13 @@
   <link href="vendor/bootstrap/css/bootstrap.min.css" rel="stylesheet">
   <style>
       .pictures{
-        width:40%
+        width:40%;
+        padding-right: 30px;
       }
-    h3{color:green;
+    h2{color:green;
       font-weight:  bold;}
+
+    ul{margin-bottom: 40px !important;}
 
   </style>
 
@@ -43,7 +46,7 @@
             <a class="nav-link" href="#">Resume</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="#">Contact</a>
+            <a class="nav-link" href="mailto:camilo.moreno.k@gmail.com">Contact</a>
           </li>
         </ul>
       </div>
@@ -55,13 +58,54 @@
     <div class="row">
       <div class="col-lg-12">
         <h1 class="mt-5 text-center">Portfolio</h1>
-        <p class="lead text-center">Some of my work</p>
+        <!-- <p class="lead text-center">Some of my work</p> -->
         <ul class="list-unstyled">
           <li>
             <!-- First Project --> 
-            <h3>Polygraph </h3>
-            <h4>How the world is searching for the worldcup </h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>La Gazette des communes </h2>
+            <h4><a href="https://www.lagazettedescommunes.com/open-data-gazette/" target="_blank">Open Data Gazette </a></h4>
+            <img class="pictures" src="images/open_data_gazette.gif">
+            <p class = "description">
+              <ul>
+                  <li>Exploratory data analysis for over 200 open data indicators</li>
+                  <li>Writing of technical briefs for the developpment team (data and vizualisation)</li>
+                  <li>Wording and editorial insights</li>
+
+              </ul>
+            </p>
+          </li>
+           <!-- First Project -->
+          <li>
+            <!-- First Project --> 
+            <h4><a href="https://www.lagazettedescommunes.com/620603/en-cartes-et-en-graphiques-comment-avance-la-couverture-mobile-en-4g-en-france-12/?abo=1" target="_blank">Mobile 4G network coverage in France</a> </h4>
+            <div class="inline"><img class="pictures" src="images/map_couverture_4g.gif"><img class="pictures" src="images/couverture_4G_antennes.gif"></div>
+            <p class = "description">
+              <ul>
+                  <li>Data analysis using R</li>
+                  <li>Data vizualisations using Flourish and CartoDB</li>
+              </ul>
+            </p>
+          </li>
+           <!-- First Project -->
+
+          <li>
+            <!-- First Project --> 
+            <h4><a href="https://www.lagazettedescommunes.com/612519/quelles-sont-les-communes-les-plus-affectees-par-les-deserts-medicaux/?" target="_blank">Which cities suffer the most from the lack of health professionals ?</a></h4>
+            <img class="pictures" src="images/carte_desserts_medicaux.gif">
+            <p class = "description">
+              <ul>
+                  <li>Data analysis using R</li>
+                  <li>Data visualisation using CartoDB, Datawrapper and Tableau Software</li>
+
+              </ul>
+            </p>
+          </li>
+           <!-- First Project -->
+          <li>
+            <!-- First Project --> 
+            <h2>Polygraph </h2>
+            <h4><a href="https://googletrends.github.io/world-cup-2018/?lang=en" target="_blank">How the world is searching for the worldcup </a></h4>
+            <img class="pictures" src="images/world_cup.gif">
             <p class = "description">
               <ul>
                   <li>Editorial insights for creating the charts with the Polygraph team</li>
@@ -73,14 +117,17 @@
             </p>
           </li>
            <!-- First Project -->
+
+
           <li>
             <!--2 Project --> 
-            <h3>Google News Lab</h3>
-            <h4>How are the french searching for… </h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>Google News Lab</h2>
+            <h4><a href="http://trendselection.fr/#fr/home/hamon/05-08" target="_blank">How are the french searching for… </a></h4>
+            <img class="pictures" src="images/trends_election.gif">
             <p class = "description">
               <ul>
                   <li>Project management</li>
+                  <li>Editorial insights for creating the charts with the Wedodata team</li>
                   <li>Daily automated data extraction through an R script (the app was updated every
                       morning)</li>
                   
@@ -91,27 +138,25 @@
            <!-- 2 Project -->
           <li>
             <!-- 3 Project --> 
-            <h4>Which are the most trending christmas recipees in each european country ?</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h4><a href="https://public.flourish.studio/story/1250/embed#slide-0" target="_blank">Christmas is here : which are the most trending recipes by country ?</a></h4>
+            <img class="pictures" src="images/recipes.gif">
             <p class = "description">
-              <ul>
-                  <li>Data and code through Flourish tool</li>
-                  <li>Handled Translations</li>
-
+              <ul><li>Data analysis and translations</li>
+                  <li>Datavizualisation using Flourish</li>
               </ul>
             </p>
           </li>
            <!-- 3 Project -->
           <li>
             <!-- 4 Project --> 
+
             
-            <h4>French regions and departments map </h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h4><a href="http://pirhoo.github.io/iframe-scaffolder/#/view?urls=Par%20d%C3%A9partement%7Chttps:%252F%252Fgoogletrends.github.io%252Ffrench_regional_map%252Fgame-of-thrones%252Fdepartments.html,Par%20r%C3%A9gion%7Chttps:%252F%252Fgoogletrends.github.io%252Ffrench_regional_map%252Fgame-of-thrones%252Fregions.html&active=0&sharing=1&autoplay=0&loop=1&layout=tabs&theme=default" target="_blank">French regions and departments map template</a></h4>
+            <img class="pictures" src="images/carte_france.gif">
             <p class = "description">
               <ul>
-                  <li>Code and execution</li>
-                  <li>Automated data extraction through an R script and a Cronjob (the map was updated
-                  every Tuesday morning after the airing of Game of Thrones)</li>
+                  <li>Code and execution (JQuery)</li>
+                  <li>Automated data extraction through an R script that pushed data on JSON format to GitHub</li>
                   
 
               </ul>
@@ -120,14 +165,14 @@
            <!-- 4 Project -->
           <li>
             <!-- 5 Project --> 
-            <h3>Self-made projects</h3>
-            <h4>2018 Fifa World Cup: Where do the footballers play?</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>Self-made projects</h2>
+            <h4><a href="#" target="_blank">2018 Fifa World Cup: Where do the footballers play? </a></h4>
+            <img class="pictures" src="images/world_cup_players.gif">
             <p class = "description">
               <ul>
                   <li>Scrapping of data</li>
                   <li>Data analysis</li>
-                  <li>Vizualisation (Flourish tool)</li>
+                  <li>Data Vizualisation (Flourish tool)</li>
 
               </ul>
             </p>
@@ -135,13 +180,13 @@
            <!-- 5 Project -->
           <li>
             <!-- 6 Project --> 
-            <h4>Mass shooting in America: A serious and recurrent problem</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h4><a href="#" target="_blank">Mass shooting in America: A serious and recurrent problem</a></h4>
+            <img class="pictures" src="images/shooting.gif">
             <p class = "description">
               <ul>
                   <li>Scrapping</li>
                   <li>Data analysis</li>
-                  <li>Vizualisation (Flourish tool)</li>
+                  <li>Data vizualisation using Flourish</li>
 
               </ul>
             </p>
@@ -150,9 +195,9 @@
 
           <li>
             <!-- 5 Project --> 
-            <h3>Wedodata</h3>
-            <h4>365 (Data calendar)</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>Wedodata</h2>
+            <h4><a href="#" target="_blank">365 (Data calendar)</a></h4>
+            <img class="pictures" src="images/365_data.gif">
             <p class = "description">
               <ul>
                   <li>Research of data, scrapping, data analysis and choice of angles for the infographics.</li>
@@ -163,20 +208,21 @@
            <!-- 5 Project -->
           <li>
             <!-- 5 Project --> 
-            <h4>The Alliances Françaises over the world</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h4><a href="#" target="_blank">Alliances Française around the world</a></h4>
+            <img class="pictures" src="images/alliance.gif">
             <p class = "description">
               <ul>
-                  <li>Data cleaning</li>
-                  <li>Exploratory data analysis to find insights in data</li>
+                  <li>Data cleaning of non standardized data set using Open Refine</li>
+                  <li>Exploratory data analysis using R</li>
+                  <li>Finding of insights and angles for the infographics</li>
               </ul>
             </p>
           </li>
            <!-- 5 Project -->
           <li>
             <!-- 5 Project --> 
-            <h4>The 10 things to know about ...</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h4><a href="https://start.lesechos.fr/emploi-stages/guide-premier-job/entreprises/index.php" target="_blank">The 10 things to know about ...</a></h4>
+            <img src="images/dix_choses.gif" height="470px;">
             <p class = "description">
               <ul>
                   <li>Content management for over 100 infographics about the biggest companies in France.</li>
@@ -187,9 +233,9 @@
            <!-- 5 Project -->    
           <li>
             <!-- 5 Project --> 
-            <h3>AskMedia</h3>
-            <h4>Who are the newcomers to the Loire Atlantique department?</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>AskMedia</h2>
+            <h4><a href="http://camilomorenokuratomi.com/wp-content/uploads/2015/10/mag142-page-a-page-1_028.jpg" target="_blank">Who are the newcomers to the Loire Atlantique department?</a></h4>
+            <img class="pictures" src="images/loire_atlantique.jpg">
             <p class = "description">
               <ul>
                   <li>Research, data analysis</li>
@@ -197,12 +243,29 @@
               </ul>
             </p>
           </li>
+
            <!-- 5 Project -->    
           <li>
             <!-- 5 Project --> 
-            <h3>Projects in spanish</h3>
-            <h4>Two years of solitude: Second anniversary of the death of Gabriel García Márquez</h4>
-            <img class="pictures" src="images/gif-players.gif">
+            <h2>Sciences Po</h2>
+            <h4><a href="http://www.camilomorenokuratomi.com/monvoisin/" target="_blank">How much does my neighbor earn?</a></h4>
+            <img class="pictures" src="images/monvoisin.gif">
+            <p class = "description">
+              <ul>
+                  <li>Winner of the 2014 Google - Sciences Po award of innovation in journalism</li>
+                  <li>Project management</li>
+                  <li>Webdesign</li>
+
+              </ul>
+            </p>
+          </li>
+           <!-- 5 Project -->
+           <!-- 5 Project -->    
+          <li>
+            <!-- 5 Project --> 
+            <h2>Projects in spanish</h2>
+            <h4><a href="https://public.tableau.com/profile/camilomoreno6812#!/vizhome/Book6_723/Dashboard1" target="_blank">Two years of solitude: Second anniversary of the death of Gabriel García Márquez</a></h4>
+            <img class="pictures" src="images/gabo.gif">
             <p class = "description">
               <ul>
                   <li>Data analysis</li>
