@@ -1,0 +1,1110 @@
+<!doctype html>
+<html lang="es">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<meta name="robots" content="noindex">
+<style>[hidden]{display:none!important}body{margin:0}</style>
+</head>
+<body>
+<title>Vientos en la Armónica</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@500;700&family=League+Gothic&family=Libre+Franklin:wght@400;500;600;700&display=swap">
+<style>
+/* Layout: jukebox-style control strip pinned on top; one centered column (max 1120px); riffs are jukebox title strips in an auto-fill grid */
+:root{
+  --bg:#ECF2EE;
+  --surface:#F9FBF9;
+  --ink:#16211C;
+  --muted:#55665D;
+  --line:#C9D6CE;
+  --brass:#8F6211;
+  --brass-ink:#FFFFFF;
+  --brass-soft:#F1E3C3;
+  --blow:#874810;
+  --blow-bg:#F4E1C5;
+  --draw:#10536A;
+  --draw-bg:#D2E7EE;
+  --hot:#B0281D;
+  --hot-ink:#FFFFFF;
+  --hot-soft:#F6DBD7;
+  --on:#16211C;
+  --on-ink:#F9FBF9;
+  --f-display:"League Gothic","Oswald","Arial Narrow",Impact,sans-serif;
+  --f-body:"Libre Franklin","Franklin Gothic Book","Helvetica Neue",Arial,sans-serif;
+  --f-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;
+}
+@media (prefers-color-scheme: dark){
+  :root:not([data-theme="light"]){
+    --bg:#0D1512; --surface:#141F1A; --ink:#E3ECE6; --muted:#98AEA3; --line:#293A33;
+    --brass:#D8A441; --brass-ink:#0D1512; --brass-soft:#33281A;
+    --blow:#F1C27C; --blow-bg:#382812; --draw:#87CFE3; --draw-bg:#0E3140;
+    --hot:#FF7B6F; --hot-ink:#0D1512; --hot-soft:#3D201D; --on:#E3ECE6; --on-ink:#0D1512;
+    color-scheme:dark;
+  }
+}
+:root[data-theme="dark"]{
+  --bg:#0D1512; --surface:#141F1A; --ink:#E3ECE6; --muted:#98AEA3; --line:#293A33;
+  --brass:#D8A441; --brass-ink:#0D1512; --brass-soft:#33281A;
+  --blow:#F1C27C; --blow-bg:#382812; --draw:#87CFE3; --draw-bg:#0E3140;
+  --hot:#FF7B6F; --hot-ink:#0D1512; --hot-soft:#3D201D; --on:#E3ECE6; --on-ink:#0D1512;
+  color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:border-box}
+html{scroll-behavior:smooth;scroll-padding-top:110px}
+body{background:var(--bg);color:var(--ink);font:400 15px/1.55 var(--f-body);-webkit-font-smoothing:antialiased}
+button,select,input{font:inherit;color:inherit}
+:focus-visible{outline:2px solid var(--brass);outline-offset:2px}
+a{color:inherit}
+p{margin:0}
+h1,h2,h3{font-family:var(--f-display);font-weight:400;text-transform:uppercase;letter-spacing:.01em;line-height:.95;text-wrap:balance;margin:0}
+h1{font-size:clamp(58px,11vw,124px)}
+h2{font-size:clamp(40px,6.2vw,60px)}
+h3{font-size:26px}
+code.t{font:700 .9em/1 var(--f-mono);background:var(--bg);border:1px solid var(--line);border-radius:4px;padding:1px 5px;white-space:nowrap}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+.eyebrow{font:600 12px/1.2 var(--f-body);letter-spacing:.14em;text-transform:uppercase;color:var(--brass)}
+.intro{max-width:66ch;color:var(--muted)}
+
+/* ---------- top control strip ---------- */
+.topbar{position:sticky;top:env(safe-area-inset-top,0px);z-index:30;background:var(--surface);border-bottom:1px solid var(--line)}
+.topbar-in{max-width:1152px;margin-inline:auto;padding:8px 16px;display:flex;flex-wrap:wrap;align-items:center;gap:8px 18px}
+.brand{font:400 26px/1 var(--f-display);text-transform:uppercase;letter-spacing:.03em}
+.brand span{color:var(--brass)}
+.ctl{display:flex;align-items:center;gap:8px;font:600 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.09em;color:var(--muted)}
+.ctl select{font:600 14px/1.2 var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:6px 8px;text-transform:none;letter-spacing:0}
+.ctl input[type=range]{width:110px;accent-color:var(--brass)}
+.ctl output{font:700 12px/1 var(--f-mono);color:var(--ink);min-width:44px}
+.tgs{gap:6px}
+.ctl .sm{display:none}
+.tg{font:600 13px/1 var(--f-body);border:1px solid var(--line);background:transparent;color:var(--muted);border-radius:999px;padding:7px 12px;cursor:pointer;text-transform:none;letter-spacing:0}
+.tg[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.stop{margin-left:auto}
+
+/* ---------- buttons ---------- */
+.btn{font:700 12.5px/1 var(--f-body);letter-spacing:.06em;text-transform:uppercase;border:1.5px solid var(--ink);background:var(--ink);color:var(--surface);border-radius:6px;padding:10px 14px;cursor:pointer;display:inline-flex;align-items:center;gap:8px}
+.btn.ghost{background:transparent;color:var(--ink)}
+.btn:disabled{opacity:.4;cursor:default}
+.btn.playing,.mini.playing{background:var(--hot);border-color:var(--hot);color:var(--hot-ink)}
+.is-playing .stop{background:var(--hot);border-color:var(--hot);color:var(--hot-ink)}
+.mini{width:32px;height:32px;flex:none;border-radius:50%;border:1.5px solid var(--ink);background:transparent;color:var(--ink);cursor:pointer;font-size:12px;line-height:1;display:inline-grid;place-items:center}
+
+/* ---------- page column ---------- */
+.page{padding-inline:16px;padding-block:28px 72px;display:flex;flex-direction:column;gap:72px}
+.page>*{width:100%;max-width:1120px;margin-inline:auto}
+section{display:grid;gap:22px}
+.sec-head{display:grid;gap:10px}
+
+/* ---------- hero ---------- */
+.hero{display:grid;gap:18px;padding-top:12px}
+.hero h1 em{font-style:normal;color:var(--brass)}
+.lead{max-width:66ch;font-size:17px;line-height:1.6}
+.jump{display:flex;flex-wrap:wrap;gap:8px}
+.jump a{font:600 13px/1 var(--f-body);text-decoration:none;border:1px solid var(--line);border-radius:999px;padding:8px 13px;background:var(--surface)}
+.jump a:hover{border-color:var(--ink)}
+
+/* ---------- harmonica map ---------- */
+.map{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:18px}
+.map-head{display:grid;gap:8px}
+.ptabs{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.ptab{text-align:left;border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:10px 12px;cursor:pointer;display:grid;gap:3px;min-width:0;overflow-wrap:anywhere}
+.ptab span{font:600 10.5px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted)}
+.ptab b{font:400 30px/1 var(--f-display);text-transform:uppercase;font-weight:400}
+.ptab[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.ptab[aria-pressed="true"] span{color:inherit;opacity:.78}
+.comb{--lab:0px;display:grid;grid-template-columns:var(--lab) repeat(10,minmax(0,1fr));gap:4px;align-items:stretch}
+.comb .lab{font:600 10.5px/1.15 var(--f-body);text-transform:uppercase;letter-spacing:.08em;color:var(--muted);align-self:center;display:none}
+.hole-n{background:var(--ink);color:var(--surface);font:700 13px/1 var(--f-mono);text-align:center;padding:8px 0;border-radius:3px}
+.nt{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;padding:8px 0 6px;border-radius:5px;border:1px solid var(--line);background:var(--bg);font:700 15px/1 var(--f-body);cursor:pointer;min-width:0}
+.nt small{font:600 10px/1 var(--f-mono);color:var(--muted)}
+.nt.ct{border:2px solid var(--brass)}
+.nt.root{background:var(--brass);border-color:var(--brass);color:var(--brass-ink)}
+.nt.root small{color:var(--brass-ink);opacity:.85}
+.nt.pass{border:2px dashed var(--hot)}
+.nt.pass.root,.nt.pass.ct{border-style:dashed}
+.nt:active{transform:translateY(1px)}
+.map-foot{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.map-foot p{max-width:70ch}
+@media (min-width:640px){.comb{--lab:76px}.comb .lab{display:block}}
+
+/* ---------- legend & filters ---------- */
+.legend{display:flex;flex-wrap:wrap;gap:10px 20px;font-size:13px;color:var(--muted);padding:14px 16px;border:1px dashed var(--line);border-radius:10px}
+.legend .it{display:flex;align-items:center;gap:8px}
+.legend .chip{position:static;display:inline-flex;height:30px;min-width:40px;padding:0 6px;margin:0}
+.legend .chip.chord{height:42px}
+.filters{display:grid;gap:10px}
+.fgroup{display:flex;flex-wrap:wrap;gap:6px;align-items:center}
+.flab{font:600 11px/1 var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);width:82px}
+.fchip{font:600 13px/1 var(--f-body);border:1px solid var(--line);background:var(--surface);border-radius:999px;padding:8px 12px;cursor:pointer}
+.fchip[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.count{font:700 12px/1 var(--f-mono);color:var(--muted)}
+.empty{padding:24px;border:1px dashed var(--line);border-radius:10px;text-align:center;color:var(--muted)}
+
+/* ---------- riff cards (jukebox title strips) ---------- */
+.riffs{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,470px),1fr));gap:18px;align-items:start}
+.riff{background:var(--surface);border:1px solid var(--line);border-radius:8px;display:flex;flex-direction:column;min-width:0}
+.riff.flash{animation:flash 1.6s ease-out 1}
+@keyframes flash{0%{box-shadow:0 0 0 0 var(--brass)}25%{box-shadow:0 0 0 6px var(--brass)}100%{box-shadow:0 0 0 0 transparent}}
+.strip{display:grid;grid-template-columns:auto minmax(0,1fr);gap:14px;align-items:center;padding:14px 16px 12px;border-bottom:1px solid var(--line)}
+.code{font:700 15px/1 var(--f-mono);border:2px solid var(--ink);border-radius:4px;padding:8px 6px 7px;min-width:46px;text-align:center}
+.strip h3{font-size:28px}
+.strip .sub{margin-top:5px;padding-top:5px;border-top:3px double var(--brass);font-size:13px;color:var(--muted);line-height:1.35}
+.rbody{padding:12px 16px 16px;display:grid;gap:12px;min-width:0}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.badge{font:600 10.5px/1 var(--f-body);letter-spacing:.07em;text-transform:uppercase;padding:5px 8px;border-radius:999px;background:var(--bg);color:var(--muted);border:1px solid var(--line)}
+.badge.pos{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.badge.hot{color:var(--hot);border-color:var(--hot);background:var(--hot-soft)}
+.harpline{font-size:13px;color:var(--muted)}
+.harpline b{color:var(--ink)}
+.tab{display:grid;gap:10px}
+.tbar{display:grid;gap:4px;min-width:0}
+.thead{display:flex;justify-content:space-between;gap:8px;font:600 11.5px/1.2 var(--f-mono);color:var(--muted)}
+.thead b{color:var(--ink)}
+.grid{display:grid;grid-template-columns:repeat(var(--n),minmax(0,1fr));grid-template-rows:15px 48px;background:var(--bg);border-radius:6px;padding:0 0 1px}
+.grid::before{content:"";grid-row:2;grid-column:1/-1;background-image:linear-gradient(to right,var(--line) 1px,transparent 1px);background-size:25% 100%;border-right:1px solid var(--line)}
+.cnt{grid-row:1;font:500 9.5px/15px var(--f-mono);color:var(--muted);text-align:center;opacity:.8}
+.cnt.b{color:var(--ink);font-weight:700;opacity:1}
+.chip{grid-row:2;margin:3px 1px;border-radius:5px;display:flex;align-items:center;justify-content:center;font:700 13px/1 var(--f-mono);position:relative;min-width:0;overflow:hidden;white-space:nowrap;padding:0 2px;cursor:default;transition:background-color .06s,color .06s}
+.chip.blow{background:var(--blow-bg);color:var(--blow)}
+.chip.draw{background:var(--draw-bg);color:var(--draw)}
+.chip.pass{box-shadow:inset 0 0 0 2px var(--hot)}
+.chip.chord{flex-direction:column;gap:1px;font-size:10.5px}
+.chip.chord i{font-style:normal;display:block;line-height:1.05}
+.chip.on{background:var(--on);color:var(--on-ink);box-shadow:none}
+.chip .mk{position:absolute;top:2px;left:3px;font:700 9px/1 var(--f-mono);font-style:normal;opacity:.85}
+.chip .mk.r{left:auto;right:3px}
+.chip.stac::after{content:"";position:absolute;bottom:3px;left:50%;width:4px;height:4px;margin-left:-2px;border-radius:50%;background:currentColor}
+.grid.t3 .chip{font-size:11.5px}
+.grid.t3 .chip.chord{font-size:9.5px}
+.actions{display:flex;flex-wrap:wrap;gap:8px}
+.txt{display:grid;gap:8px;font-size:14px;line-height:1.5}
+.k{font:700 10.5px/1 var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--brass);margin-right:6px}
+.vary{margin:6px 0 0;padding-left:18px;display:grid;gap:3px}
+
+/* ---------- 12-bar practice ---------- */
+.arr{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:22px;display:grid;gap:18px}
+.arr-row{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,190px),1fr));gap:14px 18px;align-items:end}
+.field{display:grid;gap:6px;font:600 11px/1.2 var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted);min-width:0}
+.field select{width:100%;font:600 14px/1.2 var(--f-body);color:var(--ink);background:var(--bg);border:1px solid var(--line);border-radius:6px;padding:8px;text-transform:none;letter-spacing:0}
+.field input[type=range]{width:100%;accent-color:var(--brass)}
+.field output{font:700 12px var(--f-mono);color:var(--ink)}
+.seg{display:flex;gap:4px}
+.seg button{flex:1;font:700 13px/1 var(--f-body);border:1px solid var(--line);background:var(--bg);border-radius:6px;padding:9px 0;cursor:pointer;text-transform:none;letter-spacing:0}
+.seg button[aria-pressed="true"]{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.arr-info{display:flex;flex-wrap:wrap;gap:12px 20px;align-items:center;justify-content:space-between}
+.arr-info p{font-size:14px}
+.agrid{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:6px}
+.acell{border:1px solid var(--line);border-radius:6px;padding:10px 6px;background:var(--bg);display:grid;gap:4px;text-align:center}
+.acell b{font:400 30px/1 var(--f-display);font-weight:400}
+.acell span{font:600 11px/1 var(--f-mono);color:var(--muted)}
+.acell.on{background:var(--ink);color:var(--surface);border-color:var(--ink)}
+.acell.on span{color:inherit}
+.astatus{font:600 14px/1.4 var(--f-body);min-height:1.4em}
+
+/* ---------- plan ---------- */
+.arch{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px}
+.archb{text-align:left;border:1px solid var(--line);background:var(--surface);border-radius:8px;padding:12px;cursor:pointer;display:grid;gap:6px;align-content:start;min-width:0}
+.archb b{font:400 24px/1 var(--f-display);text-transform:uppercase;font-weight:400;overflow-wrap:anywhere}
+.archb span{font-size:12px;line-height:1.35;color:var(--muted)}
+.archb[aria-pressed="true"]{border-color:var(--ink);box-shadow:inset 0 0 0 1px var(--ink);background:var(--brass-soft)}
+.plan{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:18px 20px;display:grid;gap:12px}
+.plan-head{display:flex;flex-wrap:wrap;gap:6px 16px;align-items:baseline}
+.plan-head h3{font-size:32px}
+.plan-head p{color:var(--muted);font-size:14px}
+.slot{display:grid;grid-template-columns:200px minmax(0,1fr);gap:12px;padding:11px 0 0;border-top:1px solid var(--line);align-items:center}
+.slot .sl{font:600 11px/1.3 var(--f-body);text-transform:uppercase;letter-spacing:.1em;color:var(--muted)}
+.pick{display:flex;flex-wrap:wrap;align-items:center;gap:8px 10px;min-width:0}
+.pick .go{font:700 12px/1 var(--f-mono);border:2px solid var(--ink);border-radius:4px;padding:5px 5px 4px;background:transparent;cursor:pointer}
+.pick .nm{font-weight:600}
+.pick .note{font-size:13px;color:var(--muted);flex-basis:100%}
+.plan-actions{display:flex;flex-wrap:wrap;gap:8px}
+.plan-text{font:500 13px/1.5 var(--f-mono);background:var(--surface);border:1px solid var(--line);border-radius:8px;padding:14px;white-space:pre-wrap;margin:0;overflow-x:auto}
+.rules{display:grid;gap:10px;border-top:2px solid var(--ink);padding-top:14px}
+.rules ul{margin:0;padding-left:18px;display:grid;gap:6px;max-width:80ch}
+
+/* ---------- technique ---------- */
+.tech{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,300px),1fr));gap:22px 20px}
+.tcard{border-top:2px solid var(--ink);padding-top:10px;display:grid;gap:8px;align-content:start}
+.tcard h3{font-size:25px}
+.tcard p{font-size:14px}
+.tcard .btn{justify-self:start;padding:8px 12px}
+.live{background:var(--ink);color:var(--surface);border-radius:12px;padding:20px 22px;display:grid;gap:8px}
+.live h3{font-size:30px}
+.live p{max-width:78ch}
+
+/* ---------- bends ---------- */
+.bends{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,500px),1fr));gap:16px}
+.bpos{background:var(--surface);border:1px solid var(--line);border-radius:12px;padding:16px 18px;display:grid;gap:4px}
+.bhead{display:flex;justify-content:space-between;align-items:baseline;gap:10px;margin-bottom:6px}
+.bhead span{font:600 12px/1 var(--f-mono);color:var(--muted)}
+.brow{display:grid;grid-template-columns:52px 38px minmax(0,1fr) auto;gap:10px;align-items:center;padding:9px 0;border-top:1px solid var(--line)}
+.brow .bt{font:700 14px/1 var(--f-mono);color:var(--hot)}
+.brow .bd{font:400 28px/1 var(--f-display)}
+.brow p{font-size:13.5px;line-height:1.4}
+.next{max-width:76ch;font-size:14px;color:var(--muted)}
+.next b{color:var(--ink)}
+
+/* ---------- listening ---------- */
+.listen{display:grid;grid-template-columns:repeat(auto-fill,minmax(min(100%,420px),1fr));gap:20px 28px}
+.listen h3{font-size:25px;margin-bottom:8px}
+.listen ul{margin:0;padding-left:18px;display:grid;gap:6px}
+.foot{font-size:13px;color:var(--muted);border-top:1px solid var(--line);padding-top:16px;max-width:1120px}
+.toast{position:fixed;left:50%;bottom:calc(18px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--ink);color:var(--surface);padding:10px 16px;border-radius:8px;font:600 13px/1.3 var(--f-body);z-index:50;max-width:calc(100% - 32px)}
+
+@media (max-width:1180px){.brand{display:none}}
+@media (max-width:760px){
+  .arch{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .slot{grid-template-columns:1fr;gap:6px}
+}
+@media (max-width:560px){
+  html{scroll-padding-top:100px}
+  .ctl .lg{display:none}
+  .ctl .sm{display:inline}
+  .ctl input[type=range]{width:84px}
+  .map,.arr{padding:16px}
+  .ptabs{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .ptab{padding:8px 10px}
+  .ptab b{font-size:24px}
+  .archb b{font-size:21px}
+  .nt{font-size:13px;padding:7px 0 5px}
+  .nt small{font-size:9px}
+  .strip h3{font-size:24px}
+  .page{gap:56px}
+  .brow{grid-template-columns:44px 30px minmax(0,1fr) auto;gap:8px}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+}
+</style>
+
+<div class="topbar" role="region" aria-label="Controles de audio">
+  <div class="topbar-in">
+    <span class="brand">Vientos <span>·</span> armónica</span>
+    <label class="ctl" for="key"><span class="lg">Tono de la canción</span><span class="sm">Tono</span> <select id="key"></select></label>
+    <label class="ctl" for="speed"><span class="lg">Velocidad</span><span class="sm">Vel.</span> <input id="speed" type="range" min="50" max="130" step="5" value="100"><output id="speedOut" for="speed">100 %</output></label>
+    <div class="ctl tgs" role="group" aria-label="Opciones de audio">
+      <button class="tg" id="tgBase" type="button" aria-pressed="true" title="Bajo, piano y batería debajo del riff">Base</button>
+      <button class="tg" id="tgCount" type="button" aria-pressed="false" title="Cuatro clics antes de empezar">Cuenta</button>
+      <button class="tg" id="tgLoop" type="button" aria-pressed="true" title="Repetir hasta que pares">Bucle</button>
+    </div>
+    <button class="btn stop" id="stopAll" type="button" disabled>■ Parar</button>
+  </div>
+</div>
+
+<div class="page">
+  <header class="hero" id="top">
+    <p class="eyebrow">Armónica diatónica · rock’n’roll de los 50 y 60</p>
+    <h1>La sección de <em>vientos</em> eres tú</h1>
+    <p class="lead">Riffs, respuestas, fondos y finales de saxo y trompeta adaptados a la diatónica en 1ª, 2ª, 3ª y 12ª posición. Tus bendings en 4 y 6 y los overblows <code class="t">4ob</code> y <code class="t">6ob</code> aparecen solo como notas de paso, que es como los usa un saxofonista. Elige arriba el tono de la canción: cada riff te dice qué armónica coger y suena en ese tono.</p>
+    <nav class="jump" aria-label="Secciones">
+      <a href="#rocola">Rocola de riffs</a>
+      <a href="#doce">12 compases</a>
+      <a href="#plan">Plan por canción</a>
+      <a href="#tecnica">Sonar a vientos</a>
+      <a href="#bendings">Bendings de paso</a>
+      <a href="#escucha">Para escuchar</a>
+    </nav>
+  </header>
+
+  <section class="map" aria-labelledby="mapT">
+    <div class="map-head">
+      <h2 id="mapT">Mapa de tu armónica</h2>
+      <p class="intro">Arriba soplas, abajo aspiras. En dorado la tónica; con borde, las otras notas del acorde I; con borde rojo discontinuo, tus notas de paso (bending y overblow en 4 y 6). Toca una casilla para oírla.</p>
+    </div>
+    <div class="ptabs" id="ptabs" role="group" aria-label="Posición"></div>
+    <div class="comb" id="comb"></div>
+    <div class="map-foot">
+      <p id="posjob"></p>
+      <button class="btn ghost" id="toPos" type="button">Ver riffs de esta posición</button>
+    </div>
+  </section>
+
+  <section id="rocola" aria-labelledby="rocT">
+    <div class="sec-head">
+      <p class="eyebrow" id="rocCount">Selecciones</p>
+      <h2 id="rocT">La rocola de riffs</h2>
+      <p class="intro">Cada selección lleva un código de rocola: A fondos, B golpes, C riffs de sección, D respuestas, E solos y F intros, cortes y finales. La tablatura vale para cualquier armónica; el audio suena en el tono de tu canción con bajo y batería.</p>
+    </div>
+    <div class="legend" aria-label="Cómo leer la tablatura">
+      <span class="it"><span class="chip blow">4</span>Soplar</span>
+      <span class="it"><span class="chip draw">-4</span>Aspirar</span>
+      <span class="it"><span class="chip draw pass">-4ʼ</span>Bending de ½ tono, de paso</span>
+      <span class="it"><span class="chip blow pass">6ob</span>Overblow, de paso</span>
+      <span class="it"><span class="chip draw pass">⤴-6</span>Scoop: atacas con bending y lo sueltas</span>
+      <span class="it"><span class="chip draw chord"><i>-5</i><i>-4</i><i>-3</i></span>Acorde</span>
+      <span class="it"><span class="chip blow">3|6</span>Octava con tongue-block</span>
+      <span class="it"><span class="chip draw">-4≈-5</span>Shake</span>
+      <span class="it"><span class="chip blow">5↗9</span>Rip hacia arriba</span>
+      <span class="it"><span class="chip blow">6↘</span>Caída al final</span>
+      <span class="it"><b>&gt;</b> acento · <b>●</b> corta · <b>&lt;</b> crescendo</span>
+      <span class="it">Shuffle: las corcheas van largas-cortas</span>
+    </div>
+    <div class="filters" id="filters"></div>
+    <p class="count" id="count" aria-live="polite"></p>
+    <div class="riffs" id="riffs"></div>
+    <p class="empty" id="empty" hidden>Ningún riff cumple los tres filtros a la vez. Quita uno.</p>
+  </section>
+
+  <section id="doce" aria-labelledby="doceT">
+    <div class="sec-head">
+      <h2 id="doceT">Practica en 12 compases</h2>
+      <p class="intro">Tres vueltas de blues de 12 compases con bajo, piano y batería. Cambia lo que haces en cada vuelta y la misma canción suena a tres arreglos distintos. En 3ª la forma es menor.</p>
+    </div>
+    <div class="arr">
+      <div class="arr-row">
+        <div class="field"><span>Posición</span><div class="seg" id="arrPos" role="group" aria-label="Posición"></div></div>
+        <label class="field" for="v1"><span>Vuelta 1</span><select id="v1"></select></label>
+        <label class="field" for="v2"><span>Vuelta 2</span><select id="v2"></select></label>
+        <label class="field" for="v3"><span>Vuelta 3</span><select id="v3"></select></label>
+        <label class="field" for="arrGroove"><span>Groove</span><select id="arrGroove"><option value="shuffle">Shuffle</option><option value="straight">Recto</option></select></label>
+        <label class="field" for="arrTempo"><span>Tempo <output id="arrTempoOut" for="arrTempo">126</output></span><input type="range" id="arrTempo" min="80" max="190" step="2" value="126"></label>
+      </div>
+      <div class="arr-info">
+        <p id="arrHarp"></p>
+        <button class="btn" id="arrPlay" type="button">▶ Tocar las 3 vueltas</button>
+      </div>
+      <div class="agrid" id="agrid"></div>
+      <p class="astatus" id="astatus" aria-live="polite">Pulsa tocar: el compás que suena se ilumina.</p>
+    </div>
+  </section>
+
+  <section id="plan" aria-labelledby="planT">
+    <div class="sec-head">
+      <h2 id="planT">Un plan distinto para cada canción</h2>
+      <p class="intro">Elige el tipo de tema y sale una combinación de posición, papel y riffs. Pide otra hasta que te guste, cópiala y apúntala en tu lista de temas.</p>
+    </div>
+    <div class="arch" id="arch" role="group" aria-label="Tipo de tema"></div>
+    <div class="plan" id="planOut" aria-live="polite"></div>
+    <div class="plan-actions">
+      <button class="btn" id="planAgain" type="button">Otra combinación</button>
+      <button class="btn ghost" id="planCopy" type="button">Copiar plan</button>
+    </div>
+    <pre class="plan-text" id="planText" hidden></pre>
+    <div class="rules">
+      <h3>Reglas para no repetirte</h3>
+      <ul>
+        <li>Cambia de posición entre canciones. La 12ª y la 1ª suenan a otra sección de vientos; no todo tiene que ir en 2ª.</li>
+        <li>Dale a cada tema un papel principal: este va de fondos, este de golpes, este de boogie.</li>
+        <li>Cambia de registro: estrofas entre los agujeros 2 y 5, último coro entre 6 y 9.</li>
+        <li>Alterna saxo (tongue-block, grave, growl) y trompeta (pucker, agudo, staccato, shakes).</li>
+        <li>En el solo, empieza con una nota y construye. Guarda el lick más rápido para el final.</li>
+        <li>Deja la primera estrofa sin tocar. Entrar en la segunda tiene más efecto.</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="tecnica" aria-labelledby="tecT">
+    <div class="sec-head">
+      <h2 id="tecT">Cómo sonar a vientos</h2>
+      <p class="intro">Lo que separa un riff de saxo de un lick de armónica es la articulación. Los botones tocan cada recurso en 2ª posición, en el tono de tu canción.</p>
+    </div>
+    <div class="tech" id="tech"></div>
+    <aside class="live">
+      <h3>Sonido en directo</h3>
+      <p>Para los vientos usa tu sonido limpio con cuerpo. La saturación tipo Chicago suena a armónica de blues; resérvala para los honks. Si tu multiefectos tiene octavador o pitch shifter, una octava abajo mezclada suave (25 a 35 %) convierte el boogie en saxo barítono. Para la trompeta, reverb corta de sala y un poco más de agudos. Con dos guitarras en la banda, deja los fondos por encima de ellas (agujeros 4 a 7) y baja a los graves solo para los honks.</p>
+    </aside>
+  </section>
+
+  <section id="bendings" aria-labelledby="benT">
+    <div class="sec-head">
+      <h2 id="benT">Tus bendings como notas de paso</h2>
+      <p class="intro">Las mismas cuatro notas (<code class="t">-4ʼ</code>, <code class="t">-6ʼ</code>, <code class="t">4ob</code>, <code class="t">6ob</code>) cumplen una función distinta en cada posición. Aquí están como las usaría un saxofonista: entre dos notas naturales, sin sostenerlas ni hacer vibrato.</p>
+    </div>
+    <div class="bends" id="bends"></div>
+    <p class="next"><b>Siguiente nivel, si te apetece.</b> Elige un gesto, toca la nota doblada y quédate un tiempo entero en ella antes de soltar, comparando con el audio. Cuando la sostengas afinada podrás terminar frases en ella; mientras tanto, termina con shake, growl o caída.</p>
+  </section>
+
+  <section id="escucha" aria-labelledby="escT">
+    <div class="sec-head">
+      <h2 id="escT">Para escuchar</h2>
+      <p class="intro">Copia el fraseo de los saxofonistas y fíjate en cómo lo traducen a la diatónica estos armonicistas.</p>
+    </div>
+    <div class="listen">
+      <div>
+        <h3>Saxos y trompeta de la época</h3>
+        <ul>
+          <li><b>Lee Allen y Alvin “Red” Tyler.</b> Los saxos de las sesiones de Little Richard y Fats Domino en Nueva Orleans.</li>
+          <li><b>Herb Hardesty.</b> El tenor de la banda de Fats Domino.</li>
+          <li><b>Dave Bartholomew.</b> Trompetista y arreglista de Fats Domino. Fíjate en cómo escribe los riffs de sección.</li>
+          <li><b>King Curtis.</b> El saxo staccato y juguetón de los discos de The Coasters.</li>
+          <li><b>Big Jay McNeely.</b> El honker por excelencia: una nota y mucho espectáculo.</li>
+          <li><b>Rudy Pompilli.</b> El saxo de Bill Haley &amp; His Comets.</li>
+        </ul>
+      </div>
+      <div>
+        <h3>Armónicas que suenan a vientos</h3>
+        <ul>
+          <li><b>Little Walter.</b> Frasea como un saxo de jump blues.</li>
+          <li><b>William Clarke.</b> Tongue-block enorme y riffs de sección.</li>
+          <li><b>Rod Piazza.</b> Jump blues con la armónica haciendo de sección de vientos.</li>
+          <li><b>Kim Wilson.</b> Riffs cortos, swing y mucho espacio.</li>
+          <li><b>Dennis Gruenling.</b> Tono de saxo tenor en la diatónica.</li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <footer class="foot">
+    <p>El audio es una síntesis sencilla para oír notas, ritmo y armonía; el timbre no imita una armónica real. Las tablaturas son originales y genéricas del estilo: no transcriben partes de ninguna grabación.</p>
+  </footer>
+</div>
+<div class="toast" id="toast" role="status" hidden></div>
+
+<script>
+(function(){
+'use strict';
+/*<pure>*/
+const NOTE=['C','D♭','D','E♭','E','F','F♯','G','A♭','A','B♭','B'];
+const SOLF=['Do','Re♭','Re','Mi♭','Mi','Fa','Fa♯','Sol','La♭','La','Si♭','Si'];
+const BLOW=[60,64,67,72,76,79,84,88,91,96];
+const DRAW=[62,67,71,74,77,81,83,86,89,93];
+const POS={
+  1:{off:0,name:'1ª',job:'Mayor y brillante: trompetas, fanfarrias, agudos y baladas doo-wop. Los acordes de sección salen solos: el I soplando, el IV (`-4 -5 -6`) y el V (`-3 -4 -5`) aspirando.'},
+  2:{off:7,name:'2ª',job:'La posición del rock’n’roll: saxo tenor y barítono, boogie, honks y riffs de shuffle. Aquí tu `6ob` es la tercera blue y tu `-4ʼ` la ♯4 del boogie.'},
+  3:{off:2,name:'3ª',job:'Menor y oscura: temas en menor y escala blues de saxo. Tu `-6ʼ` es la blue note ♭5 y tu `-4ʼ` la sensible que resuelve en la tónica.'},
+  12:{off:5,name:'12ª',job:'Mayor y dulce: pentatónica mayor completa sin bendings desde el agujero 4, y sextas de doo-wop. Tu `-6ʼ` es la tercera blue (♭3 → 3) y tu `6ob` la cuarta.'}
+};
+const POS_ORDER=[1,2,3,12];
+const FORM_MAJ=['I7','I7','I7','I7','IV7','IV7','I7','I7','V7','IV7','I7','V7'];
+const FORM_MIN=['i','i','i','i','iv','iv','i','i','V7','iv','i','V7'];
+function harpPC(song,pos){return ((song-POS[pos].off)%12+12)%12;}
+function harpShift(pc){return pc<=6?pc:pc-12;}
+function parseNote(s){
+  const m=/^(-?)(10|[1-9])(b{1,3}|o)?(\^)?$/.exec(String(s).trim());
+  if(!m) throw new Error('Nota no válida: '+s);
+  return {draw:m[1]==='-',hole:+m[2],bend:(m[3]&&m[3][0]==='b')?m[3].length:0,ob:m[3]==='o',scoop:!!m[4]};
+}
+function notePitch(n){const i=n.hole-1;if(n.ob)return (n.draw?BLOW[i]:DRAW[i])+1;return (n.draw?DRAW[i]:BLOW[i])-n.bend;}
+function noteLabel(n){return (n.scoop?'⤴':'')+(n.draw?'-':'')+n.hole+(n.bend?'ʼ'.repeat(n.bend):'')+(n.ob?'ob':'');}
+function parseTok(raw){
+  const parts=raw.split(':');let body=parts[0];const dur=parts[1]?+parts[1]:1;
+  const f={acc:false,stac:false,swell:false,fall:false};
+  while(/[!.<v]$/.test(body)){const c=body.slice(-1);body=body.slice(0,-1);
+    if(c==='!')f.acc=true;else if(c==='.')f.stac=true;else if(c==='<')f.swell=true;else f.fall=true;}
+  let tok;
+  if(body==='_')tok={type:'rest'};
+  else if(body[0]==='[')tok={type:'chord',notes:body.slice(1,-1).split(',').map(parseNote)};
+  else if(body.indexOf('s(')===0){const inner=body.slice(2,-1);
+    if(inner[0]==='['){const ab=inner.slice(1,-1).split('],[');tok={type:'shake',a:ab[0].split(',').map(parseNote),b:ab[1].split(',').map(parseNote)};}
+    else{const ab=inner.split(',');tok={type:'shake',a:[parseNote(ab[0])],b:[parseNote(ab[1])]};}}
+  else if(body.indexOf('g(')===0){const ab=body.slice(2,-1).split('>');tok={type:'gliss',from:parseNote(ab[0]),to:parseNote(ab[1])};}
+  else if(body.indexOf('|')>0){const ab=body.split('|');tok={type:'split',notes:[parseNote(ab[0]),parseNote(ab[1])]};}
+  else tok={type:'note',note:parseNote(body)};
+  return Object.assign(tok,f,{dur,raw});
+}
+function parseBar(str,tpb){let t=0;const toks=str.trim().split(/\s+/).map(s=>{const k=parseTok(s);k.start=t;t+=k.dur;return k;});return {toks,len:t,ok:t===4*tpb};}
+function tokNotes(k){switch(k.type){case 'note':return [k.note];case 'chord':case 'split':return k.notes;case 'shake':return k.a.concat(k.b);case 'gliss':return [k.from,k.to];default:return [];}}
+function chordInfo(sym){
+  const m=/^(b?)(VII|VI|IV|V|III|II|I|vii|vi|iv|v|iii|ii|i)(7|6)?$/.exec(sym);
+  if(!m) throw new Error('Acorde no válido: '+sym);
+  const rn=m[2],low=rn.toLowerCase();
+  const base={i:0,ii:2,iii:4,iv:5,v:7,vi:9,vii:11}[low];
+  const minor=rn===low;const tones=minor?[0,3,7]:[0,4,7];
+  if(m[3]==='7')tones.push(10);if(m[3]==='6')tones.push(9);
+  return {root:(base-(m[1]?1:0)+12)%12,minor,tones,ext:m[3]||''};
+}
+
+const MAJ=['shuffle','straight'], MAJB=['shuffle','straight','ballad'];
+const RIFFS=[
+/* ---------------- A · FONDOS ---------------- */
+{id:'A1',pos:2,role:'pad',feel:'shuffle',tpb:2,tempo:120,fam:'chords',fits:MAJB,horn:'Sección de saxos',
+ name:'Colchón de sección',sub:'Notas largas tipo “uuuh” detrás de la voz',
+ bars:[{c:'I7',t:'[-3,-4,-5]<:8'},{c:'IV7',t:'[5,6]<:8'},{c:'V7',t:'[4,5]<:8'}],
+ how:'Sin golpe de lengua: entra suave y crece hasta el final del compás abriendo las manos. Cambia de acorde justo en el 1. En el I suenan 3ª, 5ª y 7ª del acorde; en el IV y el V bastan dos notas.',
+ use:'Estrofas de shuffles y blues de 12 compases, sobre todo a partir de la segunda. También debajo de un solo de guitarra.',
+ vary:['Dos blancas con crescendo por compás en vez de una redonda.','Octava arriba: I `-7 -8 -9`, IV `8 9`, V `7 8`.','Toca solo en los compases de cambio (1, 5 y 9) y deja el resto en silencio.']},
+{id:'A2',pos:1,role:'pad',feel:'ballad',tpb:3,tempo:60,fits:['ballad'],horn:'Saxos de doo-wop',
+ name:'Terceras de doo-wop',sub:'El colchón de las baladas I–vi–IV–V',
+ bars:[{c:'I',t:'[5,6]<:12'},{c:'vi',t:'[4,5]<:12'},{c:'IV',t:'[-5,-6]<:12'},{c:'V7',t:'[-4,-5]<:12'}],
+ how:'Muy ligado, diciendo “uuu”. Las dos notas se mueven un agujero cada vez: soplas `5 6`, soplas `4 5`, aspiras `5 6`, aspiras `4 5`. Crescendo suave en cada compás.',
+ use:'Baladas en 12/8 y doo-wop (tipo “Blueberry Hill” o “Earth Angel”) y cualquier progresión I–vi–IV–V, aunque sea rápida (tipo “Stand by Me”).',
+ vary:['Octava arriba: `8 9` → `7 8` → `-9 -10` → `-8 -9`.','Dos notas por compás (“uuu-uuu”) en vez de una.','Arpegia las dos notas en tresillos: abajo, arriba, abajo.']},
+{id:'A3',pos:12,role:'pad',feel:'shuffle',tpb:2,tempo:116,fam:'chords',fits:MAJB,horn:'Saxos alto y tenor',
+ name:'Terceras paralelas',sub:'Dos notas que bajan un agujero y luego pasan a soplar',
+ bars:[{c:'I7',t:'[-5,-6]<:8'},{c:'IV7',t:'[-4,-5]<:8'},{c:'V7',t:'[5,6]<:8'}],
+ how:'I aspirando `5 6`, IV aspirando `4 5`, V soplando `5 6`. Todo ligado y con crescendo. Es el sonido dulce de una sección de saxos en mayor.',
+ use:'Shuffles alegres en mayor y medios tiempos a lo Fats Domino. En baladas, una redonda por acorde.',
+ vary:['Octava arriba: I `-9 -10`, IV `-8 -9`, V `8 9`.','Al final del V toca `6ob → -6` para resolver al I: la séptima que baja a la tercera.','Corta cada nota a negra con puntillo para un fondo más rítmico.']},
+{id:'A4',pos:3,role:'pad',feel:'straight',tpb:2,tempo:126,fits:['minor'],horn:'Sección completa',
+ name:'Bajada andaluza',sub:'i–♭VII–♭VI–V, el fondo de los temas en menor',
+ bars:[{c:'i',t:'[-4,-5,-6]<:8'},{c:'bVII',t:'[4,5,6]<:8'},{c:'bVI',t:'[-4,-5]<:8'},{c:'V7',t:'[5,6]<:8'}],
+ how:'Aspira `4 5 6`, sopla `4 5 6`, aspira `4 5`, sopla `5 6`. Casi no mueves la armónica y cada voz baja por grados, como en una sección de verdad.',
+ use:'Temas en menor con esa bajada de acordes (tipo “Hit the Road Jack” o la estrofa de “Runaway”).',
+ vary:['Golpes cortos en negras en vez de notas largas.','En el último tiempo del V toca `5 → -4ʼ` y suelta el bending a `-4` justo en el 1: la sensible que resuelve.','Solo la línea de arriba, como una trompeta: `-6`, `6`, `-5`, `5`.']},
+{id:'A5',pos:1,role:'pad',feel:'shuffle',tpb:2,tempo:120,fam:'chords',fits:MAJB,horn:'Trompeta y saxo',
+ name:'Terceras que suben',sub:'Fondo de 12 compases en 1ª, sin bendings',
+ bars:[{c:'I7',t:'[5,6]<:8'},{c:'IV7',t:'[-5,-6]<:8'},{c:'V7',t:'[-4,-5]<:8'}],
+ how:'I soplando `5 6`, IV aspirando `5 6`, V aspirando `4 5`. Cada cambio es de un agujero o de dirección del aire.',
+ use:'Rock’n’roll y shuffles en mayor cuando quieres un color más brillante que el de la 2ª.',
+ vary:['Octava arriba: I `8 9`, IV `-9 -10`, V `-8 -9`.','Cambia la redonda por el ritmo charleston (golpe en el 1 y en el “y” del 2).','Antes de pasar al IV toca `6ob → -6`: la séptima del I que baja a la tercera del IV.']},
+{id:'A6',pos:3,role:'pad',feel:'shuffle',tpb:2,tempo:100,fam:'chords',fits:['minor'],horn:'Sección de saxos',
+ name:'Blues menor',sub:'Fondo para blues de 12 compases en menor',
+ bars:[{c:'i',t:'[-5,-6]<:8'},{c:'iv',t:'[-4,-5]<:8'},{c:'V7',t:'[5,6]<:8'}],
+ how:'Los mismos agujeros que las terceras paralelas de 12ª: la escala mayor de la 12ª y la menor de la 3ª son relativas en la misma armónica. Suave y oscuro, con la garganta abierta.',
+ use:'Blues menores lentos o medios y temas con aire de cine negro (tipo “Fever”).',
+ vary:['En el V termina con `5 → -4ʼ → -4` para resolver al i.','Octava arriba: i `-9 -10`, iv `-8 -9`, V `8 9`.','Golpes cortos en 2 y 4 en vez de notas largas.']},
+/* ---------------- B · GOLPES ---------------- */
+{id:'B1',pos:2,role:'stab',feel:'shuffle',tpb:2,tempo:126,fam:'chords',fits:MAJ,horn:'Sección completa',
+ name:'Charleston',sub:'“Daah… DAT”, el golpe más usado por las secciones de los 50',
+ bars:[{c:'I7',t:'[-3,-4,-5]!:2 _ [-3,-4,-5]!. _:4'},{c:'IV7',t:'[4,5,6]!:2 _ [4,5,6]!. _:4'},{c:'V7',t:'[-4,-5,-6]!:2 _ [-4,-5,-6]!. _:4'}],
+ how:'Ataca con “ta” en el 1 y corta la segunda nota con la lengua (“dat”) en el “y” del 2. Luego silencio: el hueco también es el riff.',
+ use:'Estrofas de shuffles y swing (a lo Bill Haley) y detrás de un solo de guitarra.',
+ vary:['Desplázalo: golpes en el 2 y en el “y” del 3.','Sobre el V, `-4 -5 -6` suena menor, muy de armónica. Si choca con la guitarra, cambia a `4 5` soplado.','En el segundo golpe abre la mano de golpe: el “wah” de la trompeta con sordina.']},
+{id:'B2',pos:1,role:'stab',feel:'straight',tpb:2,tempo:150,fam:'chords',fits:MAJ,horn:'Trompetas',
+ name:'Contratiempo',sub:'Golpes secos en 2 y 4, con la caja',
+ bars:[{c:'I7',t:'_:2 [4,5,6]!. _:3 [4,5,6]!. _'},{c:'IV7',t:'_:2 [-4,-5,-6]!. _:3 [-4,-5,-6]!. _'},{c:'V7',t:'_:2 [-3,-4,-5]!. _:3 [-3,-4,-5]!. _'}],
+ how:'Golpes cortos y brillantes (“ta!”) exactamente con la caja. Pucker y vocal “i” para sonar a metal.',
+ use:'Rock’n’roll recto y twist, sobre todo en estrofas donde la guitarra rasguea corcheas.',
+ vary:['Añade un golpe en el “y” del 4 ligado al compás siguiente.','En el último coro, golpe en cada “y”.','Octava arriba: I `7 8 9`, IV `-8 -9 -10`, V `-7 -8 -9`.']},
+{id:'B3',pos:12,role:'stab',feel:'shuffle',tpb:2,tempo:126,fam:'chords',fits:MAJ,horn:'Sección completa',
+ name:'Golpe y empuje',sub:'Golpe corto en el 2 y nota larga adelantada en el “y” del 3',
+ bars:[{c:'I7',t:'_:2 [-4,-5,-6]!. _:2 [-4,-5,-6]!:3'},{c:'IV7',t:'_:2 [-4,-5]!. _:2 [-4,-5]!:3'},{c:'V7',t:'_:2 [4,5,6]!. _:2 [4,5,6]!:3'}],
+ how:'El primer golpe es seco; el segundo entra antes de tiempo y se sostiene. Ese adelanto es lo que hace sonar a sección.',
+ use:'Shuffles y swing en mayor, y en el último coro para empujar a la banda.',
+ vary:['Solo el golpe largo, sin el corto.','Sobre el I usa `-5 -6` en vez de `-4 -5 -6`: más ligero.','Growl en el golpe largo.']},
+{id:'B4',pos:3,role:'stab',feel:'straight',tpb:2,tempo:120,fam:'chords',fits:['minor'],horn:'Sección completa',
+ name:'Charleston menor',sub:'Golpes para blues en menor',
+ bars:[{c:'i',t:'[-4,-5,-6]!:2 _ [-4,-5,-6]!. _:4'},{c:'iv',t:'[-4,-5]!:2 _ [-4,-5]!. _:4'},{c:'V7',t:'[5,6]!:2 _ [5,6]!. _:4'}],
+ how:'El charleston en menor: ataque fuerte y corte limpio con la lengua.',
+ use:'Blues menores y temas en menor con groove (tipo “Fever”).',
+ vary:['Golpes en 2 y 4 en lugar del charleston.','En el V, después del último golpe, `-4ʼ → -4` al volver al i.','Solo en los compases 1, 5 y 9.']},
+/* ---------------- C · RIFFS DE SECCIÓN ---------------- */
+{id:'C1',pos:2,role:'riff',feel:'shuffle',tpb:2,tempo:132,fam:'chords',fits:MAJ,horn:'Saxo barítono y bajo',
+ name:'Boogie de barítono',sub:'1-3-5-6-♭7 al unísono con el bajo',
+ bars:[{c:'I7',t:'-2 -3 -4 5 -5 5 -4 -3'},{c:'IV7',t:'4 5 6 -6 6o -6 6 5'},{c:'V7',t:'-4 -6 -7 7 -7 -6 -4:2'}],
+ how:'Ligado, con tono gordo (tongue-block si puedes) y acento en el 1. El `6ob` del IV es de paso; si a tempo no sale limpio, toca `6`. En el V se salta la tercera, que en esta posición pediría un bending en el 2.',
+ use:'Shuffles tipo “Shake, Rattle and Roll” o “Rock Around the Clock”, en el último coro o detrás del solo de guitarra.',
+ vary:['Octava arriba sobre el I: `6 -7 -8 8 -9 8 -8 -7`.','Solo la primera mitad del compás y silencio: deja sitio a la voz.','Octava con tongue-block en el 1 de cada compás: `3|6`, `4|7`, `-1|-4`.']},
+{id:'C2',pos:1,role:'riff',feel:'straight',tpb:2,tempo:144,fam:'chords',fits:MAJ,horn:'Trompetas',
+ name:'Fanfarria',sub:'Arpegio de trompeta con la nota de arriba acentuada',
+ bars:[{c:'I7',t:'4 5 6 7!:2 6. _:2'},{c:'IV7',t:'-5 -6 7 -8!:2 7. _:2'},{c:'V7',t:'6 -7 -8 -9!:2 -8. _:2'}],
+ how:'Lengua “ta-ta-ta TAA-dat”. Pucker, sonido brillante y nada de bendings: todo es natural.',
+ use:'Intros, último coro y temas alegres en mayor. Funciona en recto y en shuffle.',
+ vary:['Al revés, bajando: `7 6 5 4`.','En tresillos para baladas: `4 5 6` y `7` larga.','Cierra con shake `6≈7` en vez del `6` corto.']},
+{id:'C3',pos:3,role:'riff',feel:'straight',tpb:2,tempo:116,fam:'chords',fits:['minor'],horn:'Saxo tenor',
+ name:'Riff menor',sub:'El riff misterioso de saxo para temas en menor',
+ bars:[{c:'i',t:'-4 -5 6 -6^:2 _ 7 -6'},{c:'iv',t:'6:2 6o -6 6 -5 -4:2'},{c:'V7',t:'-6:2 6 5 -4b -4 5 -6'}],
+ how:'En el i, el `⤴-6` es un scoop: atacas `-6` con bending y lo sueltas enseguida, así que la ♭5 pasa en un instante. En el V, `-4ʼ → -4` es la sensible de paso. Tono oscuro, garganta abierta.',
+ use:'Temas en menor y blues menores, repetido bajo la voz o como intro.',
+ vary:['Sin scoop: `-4 -5 6 -6`, silencio, `7 -6`.','Octava arriba en el i: `-8 -9 9 -10`, silencio, `10 -10`.','Toca el compás del i como pregunta y deja el siguiente en silencio.']},
+{id:'C4',pos:12,role:'riff',feel:'shuffle',tpb:2,tempo:126,fam:'chords',fits:MAJ,horn:'Saxo alto',
+ name:'Riff dulce',sub:'Pentatónica mayor con scoop en la tercera',
+ bars:[{c:'I7',t:'-5 -6^ 7 -8 7 -6 -5:2'},{c:'IV7',t:'-5 -4 4 -4 -5 6 -5:2'},{c:'V7',t:'7 6 5 6 6o -6 6:2'}],
+ how:'El `⤴-6` empieza en `-6ʼ` (♭3) y sube a `-6` (3ª): el gesto de saxo por excelencia, hecho con tu bending de paso. Ligado y alegre.',
+ use:'Shuffles alegres a lo Fats Domino, y para variar cuando casi todo el repertorio va en 2ª.',
+ vary:['Sin scoop: `-5 -6 7 -8 7 -6 -5`.','Toca solo la primera mitad y úsala como pregunta-respuesta con la voz.','En el V cambia el final por `6ob → -6` justo al llegar al I.']},
+{id:'C5',pos:2,role:'riff',feel:'shuffle',tpb:2,tempo:132,fam:'same',fits:MAJ,horn:'Sección completa',
+ name:'Riff comodín',sub:'Un solo riff que encaja en el I, el IV y el V',
+ bars:[{c:'I7',t:'-8! 7 6 7 -8!:2 _:2'}],
+ how:'`-8 7 6 7 -8` funciona sobre los tres acordes, así que lo repites los 12 compases mientras la banda cambia por debajo. Es el truco clásico de las secciones de jump blues.',
+ use:'Último coro, coro de clímax antes del final, o detrás de un solo largo de guitarra.',
+ vary:['Octava abajo: `-4 4 3 4 -4`.','Growl en la primera nota de cada repetición.','Cada cuatro compases empieza en el “y” del 1.']},
+{id:'C6',pos:2,role:'riff',feel:'straight',tpb:2,tempo:160,fam:'chords',fits:MAJ,horn:'Sección y guitarra rítmica',
+ name:'Chug 5–6',sub:'La rítmica de Chuck Berry tocada como sección',
+ bars:[{c:'I7',t:'-4 5 -4 5 -5 5 -4 5'},{c:'IV7',t:'6 -6 6 -6 6o -6 6 -6'},{c:'V7',t:'-6 -7 -6 -7 7 -7 -6 -7'}],
+ how:'Corcheas cortas con “ta-ka-ta-ka” y acento en 2 y 4. En el I alternas aspirar 4 y soplar 5; en el IV cambias el aire en el mismo agujero 6.',
+ use:'Temas a lo Chuck Berry (“Johnny B. Goode”, “Roll Over Beethoven”) doblando a la guitarra rítmica, o en el último coro.',
+ vary:['Sin la ♭7: `-4 5 -4 5 -4 5 -4 5`, y en el IV `6` en vez de `6ob`.','En dobles notas sobre el I: `-4 -5` alternando con `5 6`.','Medio compás de chug y medio de silencio en las estrofas.']},
+/* ---------------- D · RESPUESTAS ---------------- */
+{id:'D1',pos:2,role:'fill',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Saxo tenor',
+ name:'Cascada de saxo',sub:'Bajada con la tercera blue y caída final',
+ bars:[{c:'I7',t:'9 -8 7 6o -7 6v:3'}],
+ how:'Empieza arriba y baja. `6ob → -7` es el choque ♭3 → 3 y el `6ob` dura una corchea. Termina en `6` soplado y deja caer el sonido deslizando hacia los graves: un fall-off sin bending.',
+ use:'Respuesta tras una frase de la voz (compases 3–4, 7–8 u 11–12) en shuffles y rock’n’roll.',
+ vary:['Sin overblow: `9 -8 7 -7 6`, más a lo Bill Haley.','Empiézala en el 2 en vez de en el 1.','Termina con shake `6≈7` en lugar de la caída.']},
+{id:'D2',pos:2,role:'fill',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Sección de saxos',
+ name:'Doo-ba-DAT',sub:'Respuesta corta en la segunda mitad del compás',
+ bars:[{c:'I7',t:'_:4 -4 -5 -4 6!.'}],
+ how:'Deja hablar a la voz en los tiempos 1 y 2 y contesta “doo-ba-doo-DAT”. La última nota cae en el “y” del 4, corta y acentuada.',
+ use:'Entre frases de la voz en casi cualquier tema. Es la respuesta más corta y la que menos estorba.',
+ vary:['Sobre el IV: `5 6 5 7`.','Sobre el V: `-6 -7 -6 -8`.','Cambia la última nota por la octava `3|6` con tongue-block.']},
+{id:'D3',pos:1,role:'fill',feel:'shuffle',tpb:2,tempo:126,fits:MAJB,horn:'Saxo y piano',
+ name:'Tercera blue',sub:'5–3–♭3–3–1, el guiño de blues en mayor',
+ bars:[{c:'I7',t:'6 5 4o 5 4:2 _:2'}],
+ how:'El `4ob` es una vecina rápida entre dos `5` soplados: sale y vuelve. Termina en `4` soplado, nota natural, con o sin growl.',
+ use:'Respuestas en temas en mayor tocados en 1ª, y como final de frase en baladas.',
+ vary:['Sin overblow: `6 5 -4 5 4`.','Octava arriba, sin la ♭3: `9 8 -8 8 7`.','En tresillos de balada: `6 5 4ob`, luego `5 4` larga.']},
+{id:'D4',pos:3,role:'fill',feel:'shuffle',tpb:2,tempo:120,fits:['minor','shuffle','straight'],horn:'Saxo tenor',
+ name:'Nota blue',sub:'Bajada de escala blues con -6ʼ de paso',
+ bars:[{c:'I7',t:'-8 7 -6 -6b 6 -5 -4:2'}],
+ how:'Aspiras `-6` y lo doblas medio tono justo al pasar (la 5ª baja a la ♭5) para caer en `6` soplado. Es el sonido de saxo de blues por excelencia.',
+ use:'Temas en menor, y blues en mayor tocados en 3ª, donde la ♭3 natural suena a blue note.',
+ vary:['Sin bending: `-8 7 -6 6 -5 -4`.','Solo los tres últimos tiempos, empezando en `-6`.','Repite la bajada dos veces y termina la segunda en `-4` con growl.']},
+{id:'D5',pos:12,role:'fill',feel:'straight',tpb:2,tempo:120,fits:MAJB,horn:'Saxo alto',
+ name:'Campanita de sexta',sub:'Respuesta dulce con scoop en la tercera',
+ bars:[{c:'I7',t:'-9 -8 7 -6^:2 -5 _:2'}],
+ how:'Tónica, sexta, quinta y el scoop `-6ʼ → -6` que llega a la tercera; cierra en `-5`. Muy ligado.',
+ use:'Respuestas en temas en mayor tocados en 12ª, y en baladas.',
+ vary:['Sin scoop: `-9 -8 7 -6 -5`.','En tresillos de 12/8.','Termina con shake `-5≈-6`.']},
+{id:'D6',pos:1,role:'fill',feel:'straight',tpb:2,tempo:132,fits:MAJB,horn:'Trompeta',
+ name:'Shake de trompeta',sub:'Termina la frase con shake en vez de vibrato',
+ bars:[{c:'I7',t:'7 8 9 s(9,10):5'}],
+ how:'El shake es mover la armónica (o la cabeza) rápido entre dos agujeros vecinos. No necesita bending y suena igual que el shake de una trompeta.',
+ use:'Final de frase, final de solo o última nota de un tema en mayor.',
+ vary:['En registro medio: `4 5 6` y shake `6≈7`.','En 2ª sobre el I: `6 -7 -8` y shake `-8≈-9`.','Con acordes: shake `[4 5 6]≈[5 6 7]`.']},
+{id:'D7',pos:2,role:'fill',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Saxo barítono',
+ name:'Octavas',sub:'Respuesta gorda en octavas con tongue-block',
+ bars:[{c:'I7',t:'_:4 3|6! 2|5 3|6!:2'}],
+ how:'Boca ancha sobre cuatro agujeros y la lengua tapando los dos del medio: suena la tónica en dos octavas a la vez. Para pasar a `2|5` desplaza la armónica un agujero sin mover la lengua.',
+ use:'Respuestas y honks en shuffles; también para doblar un riff de guitarra.',
+ vary:['Sobre el IV: `4|7`, `2|5`, `3|6`.','Sobre el V: `-1|-4` aspirado.','Sin tongue-block: solo la nota de arriba, `6 5 6`.']},
+{id:'D8',pos:1,role:'fill',feel:'ballad',tpb:3,tempo:60,fits:['ballad'],horn:'Saxo tenor de balada',
+ name:'Tresillos de balada',sub:'Respuesta en 12/8 con la tercera blue',
+ bars:[{c:'I',t:'7 -6 6 5 -5 5 4o 5 4:4'}],
+ how:'Tresillos ligados y sin prisa. El `4ob` es la ♭3 rozando la 3ª. Deja sonar el `4` final largo y bájalo de volumen.',
+ use:'Entre frases de baladas en 12/8 y doo-wop.',
+ vary:['Sin overblow: `7 -6 6 5 -5 5 -4 5 4`.','Empieza en el tiempo 2 para hacerla más corta.','Termina con un shake `4≈5` muy suave.']},
+{id:'D9',pos:3,role:'fill',feel:'straight',tpb:2,tempo:116,fits:['minor'],horn:'Saxo tenor',
+ name:'Llegada por la sensible',sub:'Respuesta en menor con -4ʼ que se suelta',
+ bars:[{c:'i',t:'_:4 -6 5 -4^!:2'}],
+ how:'Contesta en la segunda mitad del compás: quinta, segunda y el scoop `-4ʼ → -4` que llega a la tónica. El bending dura un instante.',
+ use:'Temas en menor, entre frases de la voz.',
+ vary:['Sin scoop: `-6 5 -4`.','Con una nota más: `-6 6 5 -4`.','Octava arriba, sin scoop: `-10 8 -8`.']},
+/* ---------------- E · SOLOS ---------------- */
+{id:'E1',pos:2,role:'solo',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Saxo tenor honker',
+ name:'Honk con subida',sub:'Tónica grave golpeada y subida 4–♯4–5',
+ bars:[{c:'I7',t:'-2! -2 _ 4 -4^! -3 -2!:2'}],
+ how:'Los honks son la tónica grave (`-2`) con tono gordo. Luego `4` soplado y `⤴-4`: atacas `-4` con bending y lo sueltas, así que la ♯4 pasa en un instante.',
+ use:'Para arrancar un solo en shuffles y en rock’n’roll rápido a lo Little Richard.',
+ vary:['Growl en los dos primeros honks.','Primer golpe en octava `3|6` con tongue-block.','Repítelo cuatro compases subiendo el volumen cada vez.']},
+{id:'E2',pos:2,role:'solo',feel:'shuffle',tpb:2,tempo:132,fam:'same',fits:MAJ,horn:'Saxo tenor honker',
+ name:'Nota repetida',sub:'El truco del honker: una nota, mucho ritmo',
+ bars:[{c:'I7',t:'-4! -4. -4! -4. _ -4 -4!:2'},{c:'I7',t:'_ -4 -4! -4. -4!:2 _:2'}],
+ how:'Una sola nota cambiando ritmo y articulación. `-4` funciona sobre los tres acordes: es la 5ª del I, la 9ª del IV y la tónica del V.',
+ use:'Mitad de un solo para subir la tensión, o en el último coro.',
+ vary:['Cambia de nota cada cuatro compases: `-4`, luego `6`, luego `-8`.','Mismo ritmo en octava `-1|-4` con tongue-block.','Mismo ritmo con la doble nota `-4 -5`.']},
+{id:'E3',pos:1,role:'solo',feel:'straight',tpb:2,tempo:144,fits:MAJ,horn:'Saxo tenor o trompeta',
+ name:'Grito con caída',sub:'Rip al agudo, nota larga y fall-off',
+ bars:[{c:'I7',t:'g(5>9)!:4 _ 9. 8 7'},{c:'I7',t:'9v!:6 _:2'}],
+ how:'Rip: desliza de `5` a `9` soplando, rápido, y quédate en `9`. Al final deja caer la nota hacia los graves mientras bajas el volumen. Sin bendings.',
+ use:'Clímax de un solo o entrada del último coro en temas en mayor.',
+ vary:['Rip hasta `10` para el final del tema.','En 2ª: rip a `9` (la tónica) o a `-9` (la ♭7).','En vez de caída, shake `9≈10`.']},
+{id:'E4',pos:3,role:'solo',feel:'shuffle',tpb:2,tempo:120,fits:['minor','shuffle','straight'],horn:'Saxo tenor',
+ name:'Escala blues',sub:'Dos compases de saxo bluesero en 3ª',
+ bars:[{c:'I7',t:'-4! -5 6 -6^:2 -5 -4:2'},{c:'I7',t:'7 -6 6 -6b 6 -5 -4:2'}],
+ how:'En 3ª la ♭3 es natural (`-5`) y la ♭5 sale con `-6ʼ` de paso. Sobre un blues en mayor da el color del saxo de R&B.',
+ use:'Solos en temas en mayor con aire de blues y en temas en menor.',
+ vary:['Solo el primer compás, repetido como riff.','Cambia `-6ʼ` por `-6` si el tempo es muy rápido.','Termina el segundo compás con shake `-4≈-5`.']},
+{id:'E5',pos:12,role:'solo',feel:'shuffle',tpb:2,tempo:126,fits:MAJB,horn:'Saxo alto',
+ name:'Solo dulce',sub:'Pentatónica mayor con dos scoops de tercera',
+ bars:[{c:'I7',t:'-5 6 -6^ 7 -8 7 -6:2'},{c:'I7',t:'-9 -8 7 -6 6 -6^ -5:2'}],
+ how:'Todo natural salvo los `⤴-6`, que son tu bending de paso usado como scoop. Ligado, como un saxo alto.',
+ use:'Solos en temas alegres en mayor y en baladas.',
+ vary:['Sin scoops, todo natural.','Primer compás una octava arriba: `-9 9 -10 10`.','Repite el segundo compás como respuesta a la voz.']},
+{id:'E6',pos:1,role:'solo',feel:'ballad',tpb:3,tempo:60,fits:['ballad'],horn:'Saxo tenor de balada',
+ name:'Melodía de balada',sub:'Notas largas con scoop para baladas en 12/8',
+ bars:[{c:'I',t:'6:2 -6^ 7!:6 -6:2 6'},{c:'vi',t:'5:3 4:2 5 6:3 -6:3'}],
+ how:'Pocas notas y largas. El `⤴-6` adorna la subida a `7`. Respira entre frases como un cantante.',
+ use:'Solo de saxo en baladas lentas y doo-wop.',
+ vary:['Sin scoop.','Primer compás una octava arriba: `9 -10 10`.','Termina la frase en `4` con shake `4≈5`.']},
+/* ---------------- F · INTROS, CORTES Y FINALES ---------------- */
+{id:'F1',pos:2,role:'end',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Sección completa',
+ name:'Stop-time',sub:'Golpes en el 1 para estrofas con cortes',
+ bars:[{c:'I7',t:'[-2,-3,-4]!:2 _:6'},{c:'I7',t:'[-2,-3,-4]!:2 _:6'},{c:'I7',t:'[-2,-3,-4]!:2 _:6'},{c:'I7',t:'[-2,-3,-4]!. _ [-2,-3,-4]!. _ [-2,-3,-4]!. _ [-2,-3,-4]!. _'}],
+ how:'Golpe con la banda en el 1 y silencio total mientras canta la voz. En el cuarto compás, cuatro golpes cortos para devolver el tema a la banda.',
+ use:'Intros y estrofas con cortes (tipo “Blue Suede Shoes”).',
+ vary:['Golpe en octava `3|6` con tongue-block.','Adelanta cada golpe al “y” del 4 del compás anterior.','En 1ª, el mismo dibujo con `4 5 6`.']},
+{id:'F2',pos:2,role:'end',feel:'shuffle',tpb:2,tempo:126,fits:MAJ,horn:'Sección completa',
+ name:'Final con shake',sub:'Bajada y acorde final temblando',
+ bars:[{c:'I7',t:'-8 7 -7 6 -5 5 -4 -3'},{c:'I7',t:'-2! _ s([-2,-3,-4],[-3,-4,-5])!:6'}],
+ how:'Bajada por la escala, golpe en la tónica y el acorde final con shake: alternas rápido entre `-2 -3 -4` y `-3 -4 -5`. Es el final de sección clásico, sin vibrato.',
+ use:'Final de shuffles y rock’n’roll en 2ª.',
+ vary:['Sin la bajada: golpe y shake.','Shake lento al principio y rápido al final.','Termina con un honk `3|6` en vez del shake.']},
+{id:'F3',pos:1,role:'end',feel:'straight',tpb:2,tempo:132,fits:MAJ,horn:'Sección completa',
+ name:'Afeitado y corte',sub:'El “shave and a haircut, two bits” de toda la vida',
+ bars:[{c:'I7',t:'7!:2 6 6 -6:2 6:2'},{c:'V7|I',t:'_:2 -7!:2 7!:2 _:2'}],
+ how:'La coletilla tradicional de siete notas, de dominio público. Muy marcada, staccato y con humor.',
+ use:'Final de temas festivos en mayor, o como guiño en un corte.',
+ vary:['Con acordes: `4 5 6` en las cinco primeras notas, `-3 -4 -5` y `4 5 6` en las dos últimas.','Antes de la coletilla, un rip `5↗9`.','Tócala al doble de velocidad como guiño en un corte.']},
+{id:'F4',pos:3,role:'end',feel:'straight',tpb:2,tempo:116,fits:['minor'],horn:'Sección completa',
+ name:'Final menor',sub:'La sensible resuelve y el acorde final tiembla',
+ bars:[{c:'V7',t:'-6:2 6 5 -6 6 5 -4b'},{c:'i',t:'-4!:2 s([-4,-5,-6],[-5,-6,-7]):6'}],
+ how:'El último `-4ʼ` del V no se sostiene: lo sueltas a `-4` justo en el 1 y ahí está la resolución. Después, shake entre `-4 -5 -6` y `-5 -6 -7`: menor y menor sexta, muy de cine negro.',
+ use:'Final de temas en menor.',
+ vary:['Sin bending: termina el V en `5` y cae a `-4`.','Shake de dos notas: `-4≈-5`.','Acorde final quieto, con growl, en vez del shake.']},
+{id:'F5',pos:12,role:'end',feel:'straight',tpb:2,tempo:120,fits:MAJB,horn:'Sección completa',
+ name:'Llegada V → I',sub:'El arpegio del V con su ♭7, que resuelve en la tercera',
+ bars:[{c:'V7',t:'_:4 4 5 6 6o'},{c:'I',t:'-6!:4 -5 _:3'}],
+ how:'`4 5 6` soplado y el `6ob` de paso, que resuelve en `-6`, en el mismo agujero, justo en el 1. Sirve de entrada para empezar el tema o para cerrarlo.',
+ use:'Intros y finales en 12ª, y antes de volver al I en el último compás del blues.',
+ vary:['Sin overblow: `4 5 6 -6`.','Termina en la doble `-5 -6` con shake.','Una octava arriba: `7 8 9 -10`.']},
+{id:'F6',pos:1,role:'end',feel:'ballad',tpb:3,tempo:60,fits:['ballad'],horn:'Sección completa',
+ name:'Final de balada',sub:'Bajada en 12/8 y acorde mayor temblando',
+ bars:[{c:'V7',t:'-9:3 8:3 -8:3 -7:3'},{c:'I',t:'7!:3 s([4,5,6],[5,6,7]):9'}],
+ how:'Cuatro notas largas que bajan hacia la tónica y el acorde final con shake suave. Baja el volumen al final como una sección que se apaga.',
+ use:'Final de baladas y doo-wop en 1ª.',
+ vary:['Sin shake: acorde `4 5 6` con crescendo.','Termina en `7` sola, larga.','La bajada en tresillos: `-9 8 -8`, y `-7` larga.']}
+];
+
+const GEST={
+  1:{'-4b':{deg:'♭2',txt:'Subida cromática 1–♭2–2: `4 → -4ʼ → -4`.',t:'4 -4b -4 5:2'},
+     '-6b':{deg:'♭6',txt:'El paseo 5–♯5–6 del swing: `6 → -6ʼ → -6`.',t:'6 -6b -6 7:2'},
+     '4o':{deg:'♭3',txt:'Tercera blue: `5 → 4ob → 5` y cae al `4`.',t:'6 5 4o 5 4:2'},
+     '6o':{deg:'♭7',txt:'La séptima de dominante bajando: `7 → 6ob → -6 → 6`.',t:'7 6o -6 6:2'}},
+  2:{'-4b':{deg:'♯4',txt:'La subida de boogie 3–4–♯4–5: `-3 4 -4ʼ -4`.',t:'-3 4 -4b -4:2'},
+     '-6b':{deg:'♭2',txt:'Llegada a la tónica desde arriba: `-7 -6 -6ʼ 6`.',t:'-7 -6 -6b 6:2'},
+     '4o':{deg:'♭6',txt:'Bajada 6–♭6–5: `5 → 4ob → -4`.',t:'5 4o -4 -3:2'},
+     '6o':{deg:'♭3',txt:'La tercera blue del rock’n’roll: `-6 6ob -7 6`.',t:'-6 6o -7 6:2'}},
+  3:{'-4b':{deg:'7',txt:'La sensible que resuelve: `-6 5 -4ʼ → -4`.',t:'-6 5 -4b -4:2'},
+     '-6b':{deg:'♭5',txt:'La blue note de la escala blues: `6 → -6ʼ → -6`.',t:'6 -6b -6 7:2'},
+     '4o':{deg:'♭2',txt:'Bajada cromática oscura a la tónica: `5 → 4ob → -4`.',t:'5 4o -4:2'},
+     '6o':{deg:'♭6',txt:'Lamento menor ♭6–5–4–♭3: `6ob -6 6 -5`.',t:'6o -6 6 -5:2'}},
+  12:{'-4b':{deg:'♭6',txt:'Bajada 1–6–♭6–5: `-5 -4 -4ʼ 4`.',t:'-5 -4 -4b 4:2'},
+     '-6b':{deg:'♭3',txt:'Tercera blue, el scoop de saxo: `-5 6 -6ʼ -6`.',t:'-5 6 -6b -6:2'},
+     '4o':{deg:'♭7',txt:'Color de séptima 7–♭7–6–5: `5 4ob -4 4`.',t:'5 4o -4 4:2'},
+     '6o':{deg:'4',txt:'Cuarta de paso 3–4–3–1: `-6 6ob -6 -5`.',t:'-6 6o -6 -5:2'}}
+};
+
+const TECH=[
+  {t:'Ataque de lengua',p:'Los vientos articulan cada nota. Di “ta” en los golpes, “da” en lo ligado y “dat” en la última nota corta de una frase.',demo:{s:'_:4 -4 -5 -4 6!.',bpm:126,swing:true}},
+  {t:'Doble lengua',p:'Para notas repetidas rápidas alterna “ta-ka” (o “tu-ku”), como un trompetista. Suena más a metal que respirar cada nota.',demo:{s:'-4. -4. -4. -4. 5. 5. -4!:2',bpm:140}},
+  {t:'Tono de saxo',p:'Tongue-block: boca ancha sobre tres o cuatro agujeros y la lengua tapando los de la izquierda; garganta abierta, como diciendo “oh”. Con dos agujeros abiertos salen las octavas: `1|4`, `2|5`, `3|6`, `4|7` soplando y `-1|-4` aspirando.',demo:{s:'3|6!:2 2|5:2 3|6!:4',bpm:110,swing:true}},
+  {t:'Tono de trompeta',p:'Pucker cerrado, vocal “i”, ataques limpios y registro de 6 a 10. Menos mano y más brillo.'},
+  {t:'Growl',p:'Gruñido con la garganta (“grrr”) mientras tocas. Es el sonido de los honkers y la forma de terminar una nota larga sin vibrato.'},
+  {t:'Scoop',p:'Atacar la nota desde abajo y subir. Es tu bending de paso: `-4ʼ → -4` y `-6ʼ → -6`. Los saxos lo hacen en casi cada acento.',demo:{s:'-4^:2 _:2 -6^:2 _:2',bpm:100}},
+  {t:'Caída',p:'El fall-off: al final de una nota larga desliza la armónica hacia los graves mientras bajas el volumen. Sin bending.',demo:{s:'6v:6 _:2',bpm:110}},
+  {t:'Rip',p:'Entra en una nota aguda deslizando desde tres o cuatro agujeros abajo. Es el grito del saxo al empezar un coro.',demo:{s:'g(-4>-8)!:6 _:2',bpm:110}},
+  {t:'Shake',p:'Mueve la armónica rápido entre dos agujeros vecinos. Sustituye al vibrato para terminar frases y, con acordes, da el final de sección.',demo:{s:'s(-4,-5):6 _:2',bpm:110}},
+  {t:'Swell',p:'Empieza suave y crece hasta el cambio de acorde abriendo las manos. Es lo que hace que un fondo suene a sección.',demo:{s:'[-3,-4,-5]<:8',bpm:100}},
+  {t:'Wah con la mano',p:'Abrir y cerrar las manos imita la trompeta con sordina plunger. Úsalo en golpes y respuestas cortas.'},
+  {t:'Espacio',p:'Una sección toca menos notas que un armonicista de blues. Riffs cortos, repetidos, con silencios claros. El ritmo importa más que las notas.'}
+];
+/*</pure>*/
+
+/* ======================= UI DATA ======================= */
+const ROLES={pad:'Fondo',stab:'Golpes',riff:'Riff de sección',fill:'Respuesta',solo:'Solo',end:'Intro, corte o final'};
+const FEEL={shuffle:'Shuffle',straight:'Recto',ballad:'12/8'};
+const ARR={1:['A5','B2','C2'],2:['A1','B1','C1','C6','C5','E2'],3:['A6','B4','C3'],12:['A3','B3','C4']};
+const SLOTS=[
+  {k:'verse',label:'Estrofas, detrás de la voz',roles:['pad','stab']},
+  {k:'fill',label:'Respuestas entre frases',roles:['fill']},
+  {k:'solo',label:'Solo',roles:['solo','riff']},
+  {k:'last',label:'Último coro',roles:['riff','stab'],ballad:['pad']},
+  {k:'end',label:'Intro o final',roles:['end']}
+];
+const ARCH=[
+  {id:'pianero',name:'Rock’n’roll pianero',ej:'“Tutti Frutti”, “Long Tall Sally”, “Lucille”',feel:'straight',pos:[2,2,12,1],prefer:{solo:['E1','E2'],last:['C5']}},
+  {id:'chuck',name:'A lo Chuck Berry',ej:'“Johnny B. Goode”, “Roll Over Beethoven”, “Carol”',feel:'straight',pos:[2,2,1],prefer:{verse:['C6'],last:['C6']}},
+  {id:'shuffle',name:'Shuffle y swing',ej:'“Rock Around the Clock”, “Shake, Rattle and Roll”',feel:'shuffle',pos:[2,2,12,1],prefer:{verse:['B1','A1'],last:['C1']}},
+  {id:'rockabilly',name:'Rockabilly a lo Elvis',ej:'“Blue Suede Shoes”, “Hound Dog”, “All Shook Up”',feel:'straight',pos:[2,2,1,12],prefer:{verse:['B1'],end:['F1']}},
+  {id:'twist',name:'Twist y años 60',ej:'“Twist and Shout”, “The Twist”, “Shout”',feel:'straight',pos:[1,2,12],prefer:{verse:['B2'],last:['C2']}},
+  {id:'instru',name:'Instrumental de saxo',ej:'“Honky Tonk”, “Tequila”, “Red River Rock”',feel:'shuffle',pos:[2,2,1,12],prefer:{solo:['E1','E2','E3'],last:['C5']}},
+  {id:'balada',name:'Balada 12/8 y doo-wop',ej:'“Blueberry Hill”, “Earth Angel”, “Stand by Me”',feel:'ballad',pos:[1,1,12],prefer:{}},
+  {id:'menor',name:'Tema en menor',ej:'“Hit the Road Jack”, “Fever”, “Runaway”',feel:'minor',pos:[3],prefer:{verse:['A4']}}
+];
+const COLOR={
+  1:['Tono de trompeta: pucker, vocal “i” y ataques “ta” limpios.','Termina las frases con shake en vez de vibrato.','Último coro en el registro agudo, agujeros 7 a 10.'],
+  2:['Tono de saxo tenor: tongue-block y garganta abierta.','Growl en los honks y en las notas largas.','Octava con tongue-block en la primera nota de cada riff.'],
+  3:['Oscuro y con aire, a poco volumen.','Growl suave en las notas largas.','Silencios largos para que respire cada frase.'],
+  12:['Dulce y ligado, como un saxo alto.','Scoops `-6ʼ → -6` en las terceras.','Wah suave con la mano en los fondos.']
+};
+const RIFF={};RIFFS.forEach(r=>{RIFF[r.id]=r;r._bars=r.bars.map(b=>Object.assign({c:b.c},parseBar(b.t,r.tpb)));
+  const t={bend:false,ob:false,tb:false};r._bars.forEach(b=>b.toks.forEach(k=>{if(k.type==='split')t.tb=true;tokNotes(k).forEach(n=>{if(n.ob)t.ob=true;if(n.bend||n.scoop)t.bend=true;});}));t.none=!t.bend&&!t.ob;r._tech=t;r._els=[];});
+
+/* ======================= STATE ======================= */
+const S={key:9,speed:1,backing:true,count:false,loop:true,mapPos:2};
+try{const s=JSON.parse(localStorage.getItem('vientos-armonica')||'{}');['key','speed','backing','count','loop','mapPos'].forEach(k=>{if(k in s)S[k]=s[k];});}catch(e){}
+if(!POS[S.mapPos])S.mapPos=2;
+function save(){try{localStorage.setItem('vientos-armonica',JSON.stringify(S));}catch(e){}}
+const F={pos:'all',role:'all',tech:'all'};
+const AR={pos:2,v:['A1','B1','C1'],groove:'shuffle',tempo:126};
+let PLAN=null,ARCH_SEL='pianero';
+
+/* ======================= HELPERS ======================= */
+const $=(s,r)=>(r||document).querySelector(s);
+function h(tag,attrs){const e=document.createElement(tag);if(attrs)for(const k in attrs){const v=attrs[k];if(v==null||v===false)continue;
+  if(k==='class')e.className=v;else if(k==='html')e.innerHTML=v;else if(k.slice(0,2)==='on')e.addEventListener(k.slice(2),v);else e.setAttribute(k,v===true?'':v);}
+  for(let i=2;i<arguments.length;i++){[].concat(arguments[i]).forEach(c=>{if(c==null||c===false)return;e.append(c.nodeType?c:document.createTextNode(String(c)));});}
+  return e;}
+const esc=s=>String(s).replace(/[&<>"]/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const rich=s=>esc(s).replace(/`([^`]+)`/g,'<code class="t">$1</code>');
+const pc12=x=>((x%12)+12)%12;
+function degName(d,pos){return ['1','♭2','2','♭3','3','4',pos===3?'♭5':'♯4','5','♭6','6','♭7','7'][d];}
+function chordName(sym,tonic){const c=chordInfo(sym);return NOTE[(tonic+c.root)%12]+(c.minor?'m':'')+c.ext;}
+function chordLabel(sym,tonic){return sym.split('|').map(s=>chordName(s,tonic)).join(' → ');}
+function degPretty(sym){return sym.split('|').map(s=>s.replace(/^b/,'♭')).join(' → ');}
+function groupLabel(ns){if(ns.length===1)return noteLabel(ns[0]);return (ns[0].draw?'-':'')+ns.map(n=>n.hole).join('·');}
+function plainLabel(k){switch(k.type){
+  case 'note':return noteLabel(k.note)+(k.fall?'↘':'');
+  case 'chord':return '['+groupLabel(k.notes)+']';
+  case 'split':return noteLabel(k.notes[0])+'|'+noteLabel(k.notes[1]);
+  case 'shake':return groupLabel(k.a)+'≈'+groupLabel(k.b);
+  case 'gliss':return noteLabel(k.from)+'↗'+noteLabel(k.to)+(k.fall?'↘':'');
+  default:return '';}}
+function tipOf(k,hp){const sh=harpShift(hp);const nm=n=>NOTE[pc12(notePitch(n)+sh)];
+  const verb=n=>(n.draw?'aspirar ':'soplar ')+n.hole+(n.bend?' con bending de ½ tono':'')+(n.ob?' (overblow)':'')+(n.scoop?', empezando con bending y soltándolo':'');
+  let s='';
+  if(k.type==='note')s=verb(k.note)+' · '+nm(k.note);
+  else if(k.type==='chord')s='acorde '+groupLabel(k.notes)+' · '+k.notes.map(nm).join('-');
+  else if(k.type==='split')s='octava con tongue-block '+plainLabel(k)+' · '+k.notes.map(nm).join('-');
+  else if(k.type==='shake')s='shake entre '+groupLabel(k.a)+' y '+groupLabel(k.b);
+  else if(k.type==='gliss')s='rip: desliza de '+noteLabel(k.from)+' a '+noteLabel(k.to)+' · '+nm(k.to);
+  const ex=[k.acc&&'acento',k.stac&&'corta',k.swell&&'crescendo',k.fall&&'caída al final'].filter(Boolean);
+  return s.charAt(0).toUpperCase()+s.slice(1)+(ex.length?' · '+ex.join(', '):'');}
+function countLabel(i,tpb){if(tpb===2)return i%2?'y':String(i/2+1);if(tpb===3)return i%3?'·':String(i/3+1);return i%4?'·':String(i/4+1);}
+let toastT=0;function toast(msg){const t=$('#toast');t.textContent=msg;t.hidden=false;clearTimeout(toastT);toastT=setTimeout(()=>{t.hidden=true;},2400);}
+
+/* ======================= AUDIO ======================= */
+let AC=null,MASTER=null,NOISE=null;
+function audio(){
+  if(!AC){const C=window.AudioContext||window.webkitAudioContext;if(!C)return null;
+    AC=new C();const comp=AC.createDynamicsCompressor();comp.threshold.value=-16;comp.knee.value=12;comp.ratio.value=3.5;comp.attack.value=0.004;comp.release.value=0.2;
+    MASTER=AC.createGain();MASTER.gain.value=0.9;MASTER.connect(comp);comp.connect(AC.destination);
+    NOISE=AC.createBuffer(1,Math.floor(AC.sampleRate*0.6),AC.sampleRate);const d=NOISE.getChannelData(0);for(let i=0;i<d.length;i++)d[i]=Math.random()*2-1;}
+  if(AC.state==='suspended')AC.resume();
+  return AC;}
+const mtof=m=>440*Math.pow(2,(m-69)/12);
+function voice(dest,t,dur,midis,o){o=o||{};dur=Math.max(0.03,dur);const end=t+dur;
+  const out=AC.createGain();out.gain.value=0;out.connect(dest);
+  const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=o.acc?3200:2400;lp.Q.value=0.8;lp.connect(out);
+  const pk=(o.g||0.22)/Math.sqrt(midis.length);
+  midis.forEach(m=>{const f=mtof(m);const a=AC.createOscillator();a.type='sawtooth';const b=AC.createOscillator();b.type='square';b.detune.value=6;
+    const bg=AC.createGain();bg.gain.value=0.4;
+    [a,b].forEach(x=>{if(o.scoop){x.frequency.setValueAtTime(mtof(m-1),t);x.frequency.linearRampToValueAtTime(f,t+Math.min(0.12,dur*0.5));}else x.frequency.setValueAtTime(f,t);});
+    a.connect(lp);b.connect(bg);bg.connect(lp);a.start(t);b.start(t);a.stop(end+0.15);b.stop(end+0.15);});
+  const g=out.gain;g.setValueAtTime(0,t);
+  if(o.swell){g.linearRampToValueAtTime(pk*0.2,t+0.05);g.linearRampToValueAtTime(pk,Math.max(t+0.06,end-0.02));}
+  else if(o.legato){const a=Math.min(0.01,dur*0.3);g.linearRampToValueAtTime(pk,t+a);g.setValueAtTime(pk,Math.max(t+a,end-0.004));}
+  else{const at=Math.min(o.acc?0.005:0.012,dur*0.3);g.linearRampToValueAtTime(pk*(o.acc?1.2:1),t+at);
+    const sd=Math.max(t+at+0.001,Math.min(end-0.002,t+at+0.08));g.linearRampToValueAtTime(pk*0.8,sd);g.setValueAtTime(pk*0.8,Math.max(sd,end-0.002));}
+  g.linearRampToValueAtTime(0,end+(o.legato?0.015:0.05));}
+function holePath(from,to){const dir=to.hole>=from.hole?1:-1;const out=[];for(let x=from.hole;x!==to.hole+dir;x+=dir)out.push({draw:to.draw,hole:x,bend:0,ob:false});return out;}
+function schedFall(dest,n,t,d,shift,g){const steps=Math.min(4,n.hole-1);if(steps<=0)return;const st=d/steps;
+  for(let i=1;i<=steps;i++){voice(dest,t+(i-1)*st,st+0.006,[notePitch({draw:n.draw,hole:n.hole-i,bend:0,ob:false})+shift],{g:g*(1-i/(steps+1)),legato:true});}}
+function schedTok(dest,k,t,slot,shift){
+  const dur=Math.max(0.05,slot*(k.stac?0.45:(k.swell?0.99:0.92)));const g=k.acc?0.3:0.22;const P=n=>notePitch(n)+shift;
+  if(k.type==='note'){let main=dur;if(k.fall){main=dur*0.6;schedFall(dest,k.note,t+main,dur-main,shift,g);}
+    voice(dest,t,main,[P(k.note)],{g,acc:k.acc,swell:k.swell,scoop:k.note.scoop,legato:k.fall});}
+  else if(k.type==='chord'||k.type==='split'){voice(dest,t,dur,k.notes.map(P),{g:g*1.15,acc:k.acc,swell:k.swell});}
+  else if(k.type==='shake'){const seg=0.072;let tt=t,i=0;while(tt<t+dur-0.01){const len=Math.min(seg,t+dur-tt);voice(dest,tt,len+0.006,(i%2?k.b:k.a).map(P),{g:g*1.05,legato:true});tt+=seg;i++;}}
+  else if(k.type==='gliss'){const path=holePath(k.from,k.to);const step=Math.min(0.035,(dur*0.45)/Math.max(1,path.length-1));
+    path.slice(0,-1).forEach((n,i)=>voice(dest,t+i*step,step+0.008,[P(n)],{g:g*0.75,legato:true}));
+    const t2=t+(path.length-1)*step;const rem=t+dur-t2;let main=rem;if(k.fall){main=rem*0.6;schedFall(dest,k.to,t2+main,rem-main,shift,g);}
+    voice(dest,t2,main,[P(k.to)],{g,acc:k.acc,legato:k.fall});}}
+function bassNote(dest,t,dur,m){const o=AC.createOscillator();o.type='triangle';o.frequency.value=mtof(m);const s=AC.createOscillator();s.type='sine';s.frequency.value=mtof(m);
+  const lp=AC.createBiquadFilter();lp.type='lowpass';lp.frequency.value=900;const g=AC.createGain();o.connect(lp);s.connect(lp);lp.connect(g);g.connect(dest);
+  g.gain.setValueAtTime(0,t);g.gain.linearRampToValueAtTime(0.42,t+0.006);g.gain.exponentialRampToValueAtTime(0.16,t+Math.max(0.05,dur*0.8));g.gain.linearRampToValueAtTime(0,t+dur);
+  o.start(t);s.start(t);o.stop(t+dur+0.05);s.stop(t+dur+0.05);}
+function keys(dest,t,dur,midis,gv){const out=AC.createGain();out.connect(dest);out.gain.setValueAtTime(0,t);out.gain.linearRampToValueAtTime(gv,t+0.004);
+  out.gain.exponentialRampToValueAtTime(Math.max(0.0005,gv*0.05),t+dur);out.gain.linearRampToValueAtTime(0,t+dur+0.02);
+  midis.forEach(m=>{const o=AC.createOscillator();o.type='triangle';o.frequency.value=mtof(m);o.connect(out);o.start(t);o.stop(t+dur+0.05);});}
+function noiseHit(dest,t,dur,type,freq,gv){const s=AC.createBufferSource();s.buffer=NOISE;const f=AC.createBiquadFilter();f.type=type;f.frequency.value=freq;
+  const g=AC.createGain();g.gain.setValueAtTime(gv,t);g.gain.exponentialRampToValueAtTime(0.0008,t+dur);s.connect(f);f.connect(g);g.connect(dest);s.start(t);s.stop(t+dur+0.02);}
+function hat(dest,t,gv){noiseHit(dest,t,0.045,'highpass',7500,gv);}
+function snare(dest,t){noiseHit(dest,t,0.14,'bandpass',1900,0.22);const o=AC.createOscillator();o.type='triangle';o.frequency.setValueAtTime(190,t);
+  const g=AC.createGain();g.gain.setValueAtTime(0.18,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.08);o.connect(g);g.connect(dest);o.start(t);o.stop(t+0.1);}
+function kick(dest,t){const o=AC.createOscillator();o.type='sine';o.frequency.setValueAtTime(115,t);o.frequency.exponentialRampToValueAtTime(42,t+0.12);
+  const g=AC.createGain();g.gain.setValueAtTime(0.55,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.24);o.connect(g);g.connect(dest);o.start(t);o.stop(t+0.26);}
+function click(dest,t,acc){const o=AC.createOscillator();o.type='sine';o.frequency.value=acc?2100:1500;const g=AC.createGain();
+  g.gain.setValueAtTime(0.25,t);g.gain.exponentialRampToValueAtTime(0.001,t+0.05);o.connect(g);g.connect(dest);o.start(t);o.stop(t+0.06);}
+function schedBacking(dest,sym,t0,spb,swing,feel,tonic,dir){
+  const parts=sym.split('|');const per=4/parts.length;
+  parts.forEach((ps,pi)=>{const c=chordInfo(ps);const rootPc=(tonic+c.root)%12;const base=33+((rootPc+3)%12);let pat;
+    if(per<4)pat=[0,7];
+    else if(feel==='ballad')pat=c.minor?[0,3,7,3]:[0,4,7,4];
+    else if(dir==='down')pat=c.minor?[12,10,7,3]:(c.tones.indexOf(10)>=0?[10,9,7,4]:[12,9,7,4]);
+    else pat=c.minor?[0,3,7,10]:[0,4,7,9];
+    const vo=c.tones.map(iv=>52+pc12(rootPc+iv-52)).sort((a,b)=>a-b);
+    for(let b=0;b<per;b++){const beat=pi*per+b;const tb=t0+beat*spb;bassNote(dest,tb,spb*0.92,base+pat[b]);
+      if(feel==='ballad'){for(let k=0;k<3;k++)keys(dest,tb+k*spb/3,spb/3*0.9,vo,k===0?0.05:0.032);}
+      else if(beat%2===1){keys(dest,tb,spb*0.45,vo,0.06);}}});
+  for(let b=0;b<4;b++){const tb=t0+b*spb;if(b%2===0)kick(dest,tb);else snare(dest,tb);
+    if(feel==='ballad'){for(let k=0;k<3;k++)hat(dest,tb+k*spb/3,k===0?0.06:0.035);}
+    else{hat(dest,tb,0.06);hat(dest,tb+(swing?spb*2/3:spb/2),0.04);}}}
+function tickT(k,tpb,spb,swing){const beat=Math.floor(k/tpb),sub=k-beat*tpb;if(swing&&tpb===2)return beat*spb+(sub?spb*2/3:0);return beat*spb+sub*spb/tpb;}
+function schedPass(prog,start,P){const spb=60/prog.bpm;let bt=start,prev=null,dir='down';
+  prog.bars.forEach(bar=>{const tpb=bar.tpb||2;const len=bar.toks.reduce((a,k)=>Math.max(a,k.start+k.dur),0);const beats=Math.max(4,Math.ceil(len/tpb));
+    dir=(bar.chord&&bar.chord===prev&&dir==='up')?'down':'up';prev=bar.chord;
+    if(prog.backing&&bar.chord)schedBacking(P.back,bar.chord,bt,spb,prog.swing,prog.feel,prog.tonic,dir);
+    bar.toks.forEach((k,i)=>{const t0=bt+tickT(k.start,tpb,spb,prog.swing),t1=bt+tickT(k.start+k.dur,tpb,spb,prog.swing);
+      if(k.type!=='rest')schedTok(P.harp,k,t0,t1-t0,prog.shift);const el=bar.els&&bar.els[i];if(el)P.marks.push({el,t0,t1,on:false});});
+    const bEnd=bt+beats*spb;if(bar.barEl)P.marks.push({el:bar.barEl,t0:bt,t1:bEnd,on:false});if(bar.status)P.status.push({t0:bt,t1:bEnd,text:bar.status});bt=bEnd;});
+  return bt;}
+let PB=null;
+function stopAll(){if(!PB)return;const P=PB;PB=null;P.timers.forEach(clearTimeout);cancelAnimationFrame(P.raf);
+  try{const now=AC.currentTime;P.bus.gain.cancelScheduledValues(now);P.bus.gain.setValueAtTime(P.bus.gain.value,now);P.bus.gain.linearRampToValueAtTime(0,now+0.04);}catch(e){}
+  setTimeout(()=>{try{P.bus.disconnect();}catch(e){}},160);
+  P.marks.forEach(m=>m.el.classList.remove('on'));
+  if(P.btn){P.btn.classList.remove('playing');P.btn.innerHTML=P.btnHTML;P.btn.setAttribute('aria-pressed','false');}
+  if(P.statusEl)P.statusEl.textContent=P.opts.statusIdle||'';
+  document.body.classList.remove('is-playing');$('#stopAll').disabled=true;}
+function start(prog,btn,opts){opts=opts||{};stopAll();const ac=audio();if(!ac){toast('Este navegador no reproduce audio.');return;}
+  const bus=ac.createGain();bus.gain.value=1;bus.connect(MASTER);const harp=ac.createGain();harp.gain.value=0.95;harp.connect(bus);
+  const back=ac.createGain();back.gain.value=S.backing?0.8:0;back.connect(bus);
+  const P=PB={bus,harp,back,timers:[],marks:[],status:[],btn,btnHTML:btn?btn.innerHTML:'',statusEl:opts.statusEl||null,opts,raf:0};
+  const spb=60/prog.bpm;let t=ac.currentTime+0.1;
+  if(S.count&&!opts.once){for(let i=0;i<4;i++)click(bus,t+i*spb,i===0);t+=4*spb;}
+  const run=s=>{if(PB!==P)return;const e=schedPass(prog,s,P);
+    if(S.loop&&!opts.once)P.timers.push(setTimeout(()=>run(e),Math.max(0,(e-ac.currentTime-0.35)*1000)));
+    else P.timers.push(setTimeout(()=>{if(PB===P)stopAll();},Math.max(0,(e-ac.currentTime+0.2)*1000)));};
+  run(t);
+  if(btn){btn.classList.add('playing');btn.innerHTML=opts.mini?'■':'■ Parar';btn.setAttribute('aria-pressed','true');}
+  document.body.classList.add('is-playing');$('#stopAll').disabled=false;
+  const loop=()=>{if(PB!==P)return;const now=ac.currentTime;
+    for(const m of P.marks){const on=now>=m.t0&&now<m.t1;if(on!==m.on){m.on=on;m.el.classList.toggle('on',on);}}
+    if(P.marks.length>500)P.marks=P.marks.filter(m=>m.t1>now-1);
+    if(P.statusEl){const st=P.status.find(x=>now>=x.t0&&now<x.t1);if(st&&P.statusEl.textContent!==st.text)P.statusEl.textContent=st.text;}
+    P.raf=requestAnimationFrame(loop);};
+  P.raf=requestAnimationFrame(loop);}
+function toggle(btn,make,opts){if(PB&&PB.btn===btn){stopAll();return;}opts=Object.assign({rebuild:make},opts||{});start(make(),btn,opts);}
+function playOne(m){const ac=audio();if(!ac)return;voice(MASTER,ac.currentTime+0.02,0.55,[m],{g:0.24});}
+
+/* ======================= PROGRAMS ======================= */
+const shiftFor=pos=>harpShift(harpPC(S.key,pos));
+function riffProg(r){return {bars:r._bars.map((b,i)=>({chord:b.c,toks:b.toks,tpb:r.tpb,els:r._els[i]})),swing:r.feel==='shuffle',feel:r.feel,bpm:r.tempo*S.speed,shift:shiftFor(r.pos),tonic:S.key,backing:true};}
+function familyBars(r,form){if(r.fam==='same')return form.map((c,i)=>{const j=i%r._bars.length;return {chord:c,toks:r._bars[j].toks,els:r._els[j],tpb:r.tpb};});
+  const idx={I7:0,i:0,IV7:1,iv:1,V7:2};return form.map(c=>({chord:c,toks:r._bars[idx[c]].toks,els:r._els[idx[c]],tpb:r.tpb}));}
+function twelveProg(r){return {bars:familyBars(r,r.pos===3?FORM_MIN:FORM_MAJ),swing:r.feel==='shuffle',feel:r.feel,bpm:r.tempo*S.speed,shift:shiftFor(r.pos),tonic:S.key,backing:true};}
+function freeProg(str,pos,bpm,swing){const b=parseBar(str,2);return {bars:[{chord:null,toks:b.toks,tpb:2,els:null}],swing:!!swing,feel:swing?'shuffle':'straight',bpm,shift:shiftFor(pos),tonic:S.key,backing:false};}
+
+/* ======================= TOOLBAR ======================= */
+function initToolbar(){const sel=$('#key');for(let pc=0;pc<12;pc++)sel.append(h('option',{value:pc},NOTE[pc]+' · '+SOLF[pc]));sel.value=S.key;
+  sel.addEventListener('change',()=>{S.key=+sel.value;save();stopAll();renderAll();});
+  const sp=$('#speed'),out=$('#speedOut');sp.value=Math.round(S.speed*100);out.textContent=sp.value+' %';
+  sp.addEventListener('input',()=>{S.speed=+sp.value/100;out.textContent=sp.value+' %';});
+  sp.addEventListener('change',()=>{save();if(PB&&PB.opts.rebuild){start(PB.opts.rebuild(),PB.btn,PB.opts);}});
+  [['tgBase','backing'],['tgCount','count'],['tgLoop','loop']].forEach(([id,k])=>{const b=$('#'+id);b.setAttribute('aria-pressed',String(S[k]));
+    b.addEventListener('click',()=>{S[k]=!S[k];b.setAttribute('aria-pressed',String(S[k]));save();if(k==='backing'&&PB)PB.back.gain.value=S.backing?0.8:0;});});
+  $('#stopAll').addEventListener('click',stopAll);}
+
+/* ======================= MAP ======================= */
+function renderMap(){const tabs=$('#ptabs');tabs.innerHTML='';
+  POS_ORDER.forEach(p=>{const hp=harpPC(S.key,p);tabs.append(h('button',{class:'ptab',type:'button','aria-pressed':String(S.mapPos===p),onclick:()=>{S.mapPos=p;save();renderMap();}},
+    h('span',null,POS[p].name+' posición'),h('b',null,'Armónica '+NOTE[hp]),h('span',null,SOLF[hp])));});
+  const p=S.mapPos,sh=shiftFor(p),tones=p===3?[0,3,7,10]:[0,4,7,10];const comb=$('#comb');comb.innerHTML='';
+  [['ob','Overblow'],['blow','Soplar'],['hole','Agujero'],['draw','Aspirar'],['bend','Bending ½']].forEach((row,ri)=>{const kind=row[0];
+    comb.append(h('div',{class:'lab',style:'grid-row:'+(ri+1)+';grid-column:1'},row[1]));
+    for(let hole=1;hole<=10;hole++){const st='grid-row:'+(ri+1)+';grid-column:'+(hole+1);
+      if(kind==='hole'){comb.append(h('div',{class:'hole-n',style:st},String(hole)));continue;}
+      let n=null;
+      if(kind==='blow')n={draw:false,hole,bend:0,ob:false};
+      if(kind==='draw')n={draw:true,hole,bend:0,ob:false};
+      if(kind==='ob'&&(hole===4||hole===6))n={draw:false,hole,bend:0,ob:true};
+      if(kind==='bend'&&(hole===4||hole===6))n={draw:true,hole,bend:1,ob:false};
+      if(!n){comb.append(h('div',{style:st}));continue;}
+      const m=notePitch(n)+sh,npc=pc12(m),d=pc12(npc-S.key);const cls=['nt'];if(d===0)cls.push('root');else if(tones.indexOf(d)>=0)cls.push('ct');if(n.ob||n.bend)cls.push('pass');
+      comb.append(h('button',{class:cls.join(' '),type:'button',style:st,title:noteLabel(n)+' · '+NOTE[npc]+' ('+degName(d,p)+')','aria-label':noteLabel(n)+', '+NOTE[npc]+', grado '+degName(d,p),onclick:()=>playOne(m)},NOTE[npc],h('small',null,degName(d,p))));}});
+  $('#posjob').innerHTML=rich(POS[p].job);}
+
+/* ======================= LIBRARY ======================= */
+function chip(k,hp){const notes=tokNotes(k);const draw=(k.type==='gliss'?k.to:notes[0]).draw;const pass=notes.some(n=>n.bend||n.ob||n.scoop);
+  const cls=['chip',draw?'draw':'blow'];if(pass)cls.push('pass');if(k.stac)cls.push('stac');if(k.type==='chord')cls.push('chord');
+  const c=h('span',{class:cls.join(' '),title:tipOf(k,hp)});
+  if(k.type==='chord')k.notes.slice().reverse().forEach(n=>c.append(h('i',null,noteLabel(n))));else c.append(plainLabel(k));
+  if(k.acc)c.append(h('em',{class:'mk'},'>'));if(k.swell)c.append(h('em',{class:'mk r'},'<'));return c;}
+function barTitle(r,bi,b){if(r.fam==='chords')return 'Sobre el '+degPretty(b.c);if(r._bars.length>1)return 'Compás '+(bi+1)+' · '+degPretty(b.c);return 'Sobre el '+degPretty(b.c);}
+function card(r){const hp=harpPC(S.key,r.pos),t=r._tech;
+  const badges=h('div',{class:'badges'},h('span',{class:'badge pos'},POS[r.pos].name+' posición'),h('span',{class:'badge'},ROLES[r.role]),
+    h('span',{class:'badge'},FEEL[r.feel]+' · '+(r.feel==='ballad'?'♩.=':'♩=')+r.tempo),
+    t.bend?h('span',{class:'badge hot'},'Bending de paso'):null,t.ob?h('span',{class:'badge hot'},'Overblow de paso'):null,
+    t.tb?h('span',{class:'badge'},'Tongue-block'):null,t.none?h('span',{class:'badge'},'Sin bendings'):null);
+  const tab=h('div',{class:'tab'});r._els=[];
+  r._bars.forEach((b,bi)=>{const n=4*r.tpb;const grid=h('div',{class:'grid t'+r.tpb,style:'--n:'+n,'aria-hidden':'true'});
+    for(let i=0;i<n;i++)grid.append(h('span',{class:'cnt'+(i%r.tpb===0?' b':''),style:'grid-column:'+(i+1)},countLabel(i,r.tpb)));
+    const els=[];b.toks.forEach(k=>{if(k.type==='rest'){els.push(null);return;}const c=chip(k,hp);c.style.gridColumn=(k.start+1)+' / span '+k.dur;grid.append(c);els.push(c);});
+    r._els.push(els);
+    tab.append(h('div',{class:'tbar'},h('div',{class:'thead'},h('span',null,barTitle(r,bi,b)),h('b',null,chordLabel(b.c,S.key))),grid,
+      h('p',{class:'sr'},barTitle(r,bi,b)+': '+b.toks.map(k=>k.type==='rest'?'silencio':plainLabel(k)).join(' '))));});
+  const play=h('button',{class:'btn',type:'button','aria-pressed':'false'},'▶ Escuchar');play.addEventListener('click',()=>toggle(play,()=>riffProg(r)));
+  let p12=null;if(r.fam){p12=h('button',{class:'btn ghost',type:'button','aria-pressed':'false'},'▶ En 12 compases');p12.addEventListener('click',()=>toggle(p12,()=>twelveProg(r)));}
+  const txt=h('div',{class:'txt'},
+    h('p',null,h('span',{class:'k'},'Cómo'),h('span',{html:rich(r.how)})),
+    h('p',null,h('span',{class:'k'},'Úsalo en'),h('span',{html:rich(r.use)})),
+    h('div',null,h('span',{class:'k'},'Para no repetirte'),h('ul',{class:'vary'},r.vary.map(v=>h('li',{html:rich(v)})))));
+  return h('article',{class:'riff',id:'r-'+r.id},
+    h('header',{class:'strip'},h('span',{class:'code','aria-label':'Selección '+r.id},r.id),h('div',null,h('h3',null,r.name),h('p',{class:'sub'},r.sub))),
+    h('div',{class:'rbody'},badges,
+      h('p',{class:'harpline'},'Imita: ',h('b',null,r.horn),' · armónica ',h('b',null,NOTE[hp]),' ('+SOLF[hp]+') para tu canción en ',h('b',null,NOTE[S.key])),
+      tab,h('div',{class:'actions'},play,p12),txt));}
+function renderLibrary(){const g=$('#riffs');g.innerHTML='';RIFFS.forEach(r=>g.append(card(r)));applyFilters();}
+function renderFilters(){const box=$('#filters');box.innerHTML='';
+  const groups=[['pos','Posición',[['all','Todas'],['1','1ª'],['2','2ª'],['3','3ª'],['12','12ª']]],
+    ['role','Función',[['all','Todas'],['pad','Fondos'],['stab','Golpes'],['riff','Riffs'],['fill','Respuestas'],['solo','Solos'],['end','Intros y finales']]],
+    ['tech','Técnica',[['all','Todas'],['none','Sin bendings'],['bend','Bending de paso'],['ob','Overblow de paso'],['tb','Tongue-block']]]];
+  groups.forEach(([key,label,opts])=>{const g=h('div',{class:'fgroup',role:'group','aria-label':label},h('span',{class:'flab'},label));
+    opts.forEach(([v,l])=>g.append(h('button',{class:'fchip',type:'button','aria-pressed':String(F[key]===v),onclick:()=>{F[key]=v;renderFilters();applyFilters();}},l)));box.append(g);});}
+function applyFilters(){let n=0;RIFFS.forEach(r=>{const el=document.getElementById('r-'+r.id);if(!el)return;
+  const ok=(F.pos==='all'||String(r.pos)===F.pos)&&(F.role==='all'||r.role===F.role)&&(F.tech==='all'||r._tech[F.tech]);el.hidden=!ok;if(ok)n++;});
+  $('#count').textContent=n===1?'1 riff':n+' riffs';$('#empty').hidden=n>0;}
+function goRiff(id){const el=document.getElementById('r-'+id);if(!el)return;
+  if(el.hidden){F.pos='all';F.role='all';F.tech='all';renderFilters();applyFilters();}
+  const rm=window.matchMedia&&window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+  el.scrollIntoView({behavior:rm?'auto':'smooth',block:'start'});el.classList.remove('flash');void el.offsetWidth;el.classList.add('flash');}
+
+/* ======================= 12 BARS ======================= */
+function renderArr(){const seg=$('#arrPos');seg.innerHTML='';
+  POS_ORDER.forEach(p=>seg.append(h('button',{type:'button','aria-pressed':String(AR.pos===p),onclick:()=>{if(PB&&PB.btn===$('#arrPlay'))stopAll();AR.pos=p;AR.v=ARR[p].slice(0,3);renderArr();}},POS[p].name)));
+  ['v1','v2','v3'].forEach((id,i)=>{const s=$('#'+id);s.innerHTML='';ARR[AR.pos].forEach(rid=>s.append(h('option',{value:rid},rid+' · '+RIFF[rid].name)));
+    s.append(h('option',{value:'tacet'},'Silencio (tacet)'));s.value=AR.v[i];});
+  const form=AR.pos===3?FORM_MIN:FORM_MAJ;const hp=harpPC(S.key,AR.pos);
+  $('#arrHarp').innerHTML='Armónica <b>'+NOTE[hp]+'</b> ('+SOLF[hp]+') · '+POS[AR.pos].name+' posición · canción en <b>'+NOTE[S.key]+(AR.pos===3?'m':'')+'</b>';
+  const g=$('#agrid');g.innerHTML='';form.forEach((c,i)=>g.append(h('div',{class:'acell'},h('b',null,chordName(c,S.key)),h('span',null,(i+1)+' · '+degPretty(c)))));}
+function arrProg(){const form=AR.pos===3?FORM_MIN:FORM_MAJ;const cells=Array.prototype.slice.call($('#agrid').children);const bars=[];
+  AR.v.forEach((id,vi)=>{const r=id==='tacet'?null:RIFF[id];const label='Vuelta '+(vi+1)+' de 3 · '+(r?r.id+' '+r.name:'silencio (tacet)');
+    const fb=r?familyBars(r,form):form.map(c=>({chord:c,toks:[],tpb:2}));
+    fb.forEach((b,bi)=>bars.push({chord:b.chord,toks:b.toks,tpb:2,els:null,barEl:cells[bi],status:label}));});
+  return {bars,swing:AR.groove==='shuffle',feel:AR.groove,bpm:AR.tempo,shift:shiftFor(AR.pos),tonic:S.key,backing:true};}
+function initArr(){['v1','v2','v3'].forEach((id,i)=>$('#'+id).addEventListener('change',e=>{AR.v[i]=e.target.value;if(PB&&PB.btn===$('#arrPlay'))start(arrProg(),$('#arrPlay'),PB.opts);}));
+  $('#arrGroove').addEventListener('change',e=>{AR.groove=e.target.value;if(PB&&PB.btn===$('#arrPlay'))start(arrProg(),$('#arrPlay'),PB.opts);});
+  const tp=$('#arrTempo');tp.addEventListener('input',()=>{AR.tempo=+tp.value;$('#arrTempoOut').textContent=tp.value;});
+  tp.addEventListener('change',()=>{if(PB&&PB.btn===$('#arrPlay'))start(arrProg(),$('#arrPlay'),PB.opts);});
+  const b=$('#arrPlay');b.addEventListener('click',()=>toggle(b,arrProg,{statusEl:$('#astatus'),statusIdle:'Pulsa tocar: el compás que suena se ilumina.'}));}
+
+/* ======================= PLAN ======================= */
+function rnd(a){return a[Math.floor(Math.random()*a.length)];}
+function rollPlan(id){const a=ARCH.find(x=>x.id===id);const prev=PLAN&&PLAN.arch===id?PLAN.sig:null;
+  for(let at=0;at<10;at++){const pos=rnd(a.pos);const used={};
+    const slots=SLOTS.map(sl=>{const roles=(a.feel==='ballad'&&sl.ballad)?sl.ballad:sl.roles;
+      const cand=RIFFS.filter(r=>r.pos===pos&&roles.indexOf(r.role)>=0&&r.fits.indexOf(a.feel)>=0);
+      const pref=((a.prefer||{})[sl.k]||[]).map(x=>RIFF[x]).filter(r=>r&&r.pos===pos);
+      let pool=cand.concat(pref,pref).filter(r=>!used[r.id]);if(!pool.length)pool=cand.concat(pref);
+      const r=pool.length?rnd(pool):null;if(r)used[r.id]=1;
+      return {k:sl.k,label:sl.label,r,tacet:sl.k==='verse'&&Math.random()<0.3,note:(a.feel==='ballad'&&sl.k==='last')?'Una octava arriba, con más volumen.':''};});
+    const sig=pos+':'+slots.map(s=>s.r?s.r.id:'-').join(',');
+    if(sig!==prev||at===9){PLAN={arch:id,pos,slots,color:rnd(COLOR[pos]),sig};return;}}}
+function planText(){const a=ARCH.find(x=>x.id===PLAN.arch);const hp=harpPC(S.key,PLAN.pos);
+  const lines=['Plan: '+a.name+' (canción en '+NOTE[S.key]+')','Armónica '+NOTE[hp]+' ('+SOLF[hp]+') · '+POS[PLAN.pos].name+' posición'];
+  PLAN.slots.forEach(s=>lines.push(s.label+': '+(s.tacet?'primera estrofa en silencio; desde la segunda, ':'')+(s.r?s.r.id+' '+s.r.name:'libre')+(s.note?' ('+s.note.replace(/\.$/,'').toLowerCase()+')':'')));
+  lines.push('Color: '+PLAN.color.replace(/`/g,''));return lines.join('\n');}
+function renderPlan(){const box=$('#arch');box.innerHTML='';
+  ARCH.forEach(a=>box.append(h('button',{class:'archb',type:'button','aria-pressed':String(ARCH_SEL===a.id),onclick:()=>{ARCH_SEL=a.id;rollPlan(a.id);renderPlan();}},h('b',null,a.name),h('span',null,a.ej))));
+  const out=$('#planOut');out.innerHTML='';const a=ARCH.find(x=>x.id===PLAN.arch);const hp=harpPC(S.key,PLAN.pos);
+  out.append(h('div',{class:'plan-head'},h('h3',null,a.name),h('p',{html:'Armónica <b>'+NOTE[hp]+'</b> ('+SOLF[hp]+') · '+POS[PLAN.pos].name+' posición · canción en <b>'+NOTE[S.key]+'</b>'})));
+  PLAN.slots.forEach(s=>{const pick=h('div',{class:'pick'});
+    if(s.r){const r=s.r;const mini=h('button',{class:'mini',type:'button','aria-label':'Escuchar '+r.id+' '+r.name},'▶');mini.addEventListener('click',()=>toggle(mini,()=>riffProg(r),{mini:true}));
+      pick.append(h('button',{class:'go',type:'button',title:'Ir a la ficha',onclick:()=>goRiff(r.id)},r.id),h('span',{class:'nm'},r.name),mini);}
+    else pick.append(h('span',{class:'nm'},'Libre'));
+    if(s.tacet)pick.append(h('span',{class:'note'},'Primera estrofa en silencio; entra desde la segunda.'));
+    if(s.note)pick.append(h('span',{class:'note'},s.note));
+    out.append(h('div',{class:'slot'},h('span',{class:'sl'},s.label),pick));});
+  out.append(h('div',{class:'slot'},h('span',{class:'sl'},'Color'),h('div',{class:'pick'},h('span',{html:rich(PLAN.color)}))));
+  $('#planText').hidden=true;}
+function initPlan(){rollPlan(ARCH_SEL);
+  $('#planAgain').addEventListener('click',()=>{rollPlan(ARCH_SEL);renderPlan();});
+  $('#planCopy').addEventListener('click',()=>{const txt=planText();const pre=$('#planText');
+    const fallback=()=>{pre.textContent=txt;pre.hidden=false;const rg=document.createRange();rg.selectNodeContents(pre);const sel=window.getSelection();sel.removeAllRanges();sel.addRange(rg);toast('Texto seleccionado: cópialo a mano.');};
+    try{navigator.clipboard.writeText(txt).then(()=>toast('Plan copiado'),fallback);}catch(e){fallback();}});}
+
+/* ======================= TECHNIQUE & BENDS ======================= */
+function renderTech(){const box=$('#tech');box.innerHTML='';
+  TECH.forEach(t=>{let b=null;if(t.demo){b=h('button',{class:'btn ghost',type:'button','aria-pressed':'false'},'▶ Oír');b.addEventListener('click',()=>toggle(b,()=>freeProg(t.demo.s,2,t.demo.bpm,t.demo.swing),{once:true}));}
+    box.append(h('div',{class:'tcard'},h('h3',null,t.t),h('p',{html:rich(t.p)}),b));});}
+function renderBends(){const box=$('#bends');box.innerHTML='';
+  POS_ORDER.forEach(p=>{const hp=harpPC(S.key,p);const blk=h('div',{class:'bpos'},h('div',{class:'bhead'},h('h3',null,POS[p].name+' posición'),h('span',null,'armónica '+NOTE[hp]+' ('+SOLF[hp]+')')));
+    [['-4b','-4ʼ'],['-6b','-6ʼ'],['4o','4ob'],['6o','6ob']].forEach(([key,lab])=>{const g=GEST[p][key];
+      const b=h('button',{class:'mini',type:'button','aria-label':'Escuchar '+lab+' en '+POS[p].name+' posición'},'▶');b.addEventListener('click',()=>toggle(b,()=>freeProg(g.t,p,96,false),{once:true,mini:true}));
+      blk.append(h('div',{class:'brow'},h('span',{class:'bt'},lab),h('span',{class:'bd',title:'Grado en la escala'},g.deg),h('p',{html:rich(g.txt)}),b));});
+    box.append(blk);});}
+
+/* ======================= INIT ======================= */
+function renderAll(){renderMap();renderLibrary();renderArr();renderPlan();renderBends();}
+initToolbar();renderFilters();initArr();initPlan();renderTech();renderAll();
+$('#rocCount').textContent=RIFFS.length+' selecciones';
+$('#toPos').addEventListener('click',()=>{F.pos=String(S.mapPos);F.role='all';F.tech='all';renderFilters();applyFilters();document.getElementById('rocola').scrollIntoView({behavior:'smooth',block:'start'});});
+})();
+</script>
+
+</body>
+</html>
